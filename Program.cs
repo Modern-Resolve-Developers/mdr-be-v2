@@ -21,7 +21,7 @@ ConfigurationManager configuration = builder.Configuration;
 
 
 builder.Services.AddDbContext<ApiDbContext>(options =>
-    options.UseSqlServer(configuration["ConnectionStrings:localenv"],
+    options.UseSqlServer(configuration["ConnectionStrings:prodenv"],
     providerOptions => providerOptions.EnableRetryOnFailure())
 );
 
