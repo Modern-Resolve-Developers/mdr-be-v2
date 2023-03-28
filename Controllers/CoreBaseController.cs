@@ -45,16 +45,16 @@ namespace danj_backend.Controllers
             }
         }
 
-        [Authorize]
+        
         [Route("find-all-users-report"), HttpGet]
         public ActionResult FindAllUsers()
         {
             var result = repository.GetAllUsers();
             return Ok(result);
         }
-
+        [Authorize]
         [Route("uam-add"), HttpPost]
-        public IActionResult addUAM([FromBody] TEntity entity)
+        public IActionResult addUAM(TEntity entity)
         {
             repository.UAM(entity);
             return Ok("success");

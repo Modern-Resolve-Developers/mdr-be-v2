@@ -13,7 +13,7 @@ namespace danj_backend.Model
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public string firstname { get; set; }
-        public string middlename { get; set; }
+        public string? middlename { get; set; }
         public string lastname { get; set; }
         [Required]
         public string email { get; set; }
