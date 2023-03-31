@@ -1,0 +1,37 @@
+﻿name: CI
+
+on:
+  push:
+  pull_request:
+    branches: [ develop ]
+# Specifies the dotnet SDK version for one of the
+# below steps
+env:
+  DOTNET_VERSION: '6.0.x'
+# This section contains all the jobs to be run.
+jobs:
+  ci:
+    name: ci-${{matrix.os}}
+    # Specifies what platforms the workflow should
+    # run on.
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      # Checks out the source code at the latest commit
+      - uses: actions/checkout@v3
+      # Installs the .NET SDK on the build machine
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+      # Installs any NuGet packages required.
+      - name: Install dependencies
+        run: dotnet restore
+      # Builds the project
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+      # Runs any tests in the project
+      - name: Test
+        run: dotnet test --no-restore --verbosity normal
