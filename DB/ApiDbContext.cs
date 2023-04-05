@@ -20,5 +20,9 @@ namespace danj_backend.DB
         public DbSet<JWTAuthentication> JwtAuthentications { get; set; }
 
         public DbSet<TokenModel> tokenModels { get; set; }
+        public DbSet<Product_Features_Category> ProductFeaturesCategories { get; set; }
+        public DbSet<ProductManagement> ProductManagements { get; set; }
+        public DbSet<Customers> CustomersEnumerable { get; set; }
+        public DbSet<SystemGenerator> SystemGenerators { get; set; }
     }
 }
