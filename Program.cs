@@ -3,6 +3,8 @@ using System.Security.Claims;
 using System.Text;
 using danj_backend.Authentication;
 using danj_backend.DB;
+using danj_backend.EFCore.EFProducts;
+using danj_backend.EFCore.EFSystemGen;
 using danj_backend.EFCore.EFUsers;
 using danj_backend.Helper;
 using danj_backend.Repository;
@@ -121,6 +123,9 @@ builder.Services.AddScoped<EFCoreFuncTokenRepository>();
 builder.Services.AddScoped<EFCoreFuncAuthHistory>();
 builder.Services.AddScoped<EFCoreFuncTaskManagement>();
 builder.Services.AddScoped<EFCoreFuncJWTRepository>();
+builder.Services.AddScoped<EFCoreFuncProdCategRepository>();
+builder.Services.AddScoped<EFCoreFuncProductManagement>();
+builder.Services.AddScoped<EFCoreFuncSystemGen>();
 builder.Services.AddScoped<ApiKeyAuthFilter>();
 
 
