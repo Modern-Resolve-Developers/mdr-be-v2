@@ -8,7 +8,7 @@ public class ProductManagement: IProductManagement
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int product_id { get; set; }
+    public int id { get; set; }
     [Required]
     public string productName { get; set; }
     public string productDescription { get; set; }
@@ -17,7 +17,7 @@ public class ProductManagement: IProductManagement
     public string projectType { get; set; }
     public string productImageUrl { get; set; }
     public string projectScale { get; set; }
-    public decimal productPrice { get; set; }
+    public float productPrice { get; set; }
     public string projectInstallment { get; set; }
     public float installmentInterest { get; set; }
     public int monthsToPay { get; set; }

@@ -24,4 +24,11 @@ where TRepository : IProductManagementRepository<TEntity>
       var result = await _repository.createProducts(entity);
       return Ok(result);
    }
+   
+   [Route("get-all-products"), HttpGet]
+   public async Task<IActionResult> getAllProducts()
+   {
+      var result = await _repository.fetchAllProducts();
+      return Ok(result);
+   }
 }

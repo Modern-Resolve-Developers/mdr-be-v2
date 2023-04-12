@@ -2,7 +2,7 @@
 
 public interface IProductManagement
 {
-    int product_id { get; set; }
+    int id { get; set; }
     string productName { get; set; }
     string productDescription { get; set; }
     string productCategory { get; set; }
@@ -10,7 +10,7 @@ public interface IProductManagement
     string projectType { get; set; }
     string productImageUrl { get; set; }
     string projectScale { get; set; }
-    decimal productPrice { get; set; }
+    float productPrice { get; set; }
     string projectInstallment { get; set; }
     float installmentInterest { get; set; }
     int monthsToPay { get; set; }
