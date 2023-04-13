@@ -18,6 +18,11 @@ where TContext: ApiDbContext
 
     public async Task<TEntity> createProducts(TEntity entity)
     {
+        entity.downPayment = entity.downPayment;
+        entity.productPrice = entity.productPrice;
+        entity.installmentInterest = entity.installmentInterest;
+        entity.monthlyPayment = entity.monthlyPayment;
+        entity.totalPayment = entity.totalPayment;
         entity.created_at = Convert.ToDateTime(System.DateTime.Now.ToString("yyyy/MM/dd"));
         entity.updated_at = Convert.ToDateTime(System.DateTime.Now.ToString("yyyy/MM/dd"));
         entity.productStatus = Convert.ToChar("1");
@@ -26,5 +31,10 @@ where TContext: ApiDbContext
         context.Set<TEntity>().Add(entity);
         await context.SaveChangesAsync();
         return entity;
+    }
+
+    public async Task<List<TEntity>> fetchAllProducts()
+    {
+        return context.Set<TEntity>().Where(x => x.productStatus == Convert.ToChar("1") && x.IsUnderMaintenance == Convert.ToChar("0")).ToList();
     }
 }
