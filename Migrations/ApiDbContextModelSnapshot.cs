@@ -391,11 +391,11 @@ namespace danj_backend.Migrations
 
             modelBuilder.Entity("danj_backend.Model.ProductManagement", b =>
                 {
-                    b.Property<int>("product_id")
+                    b.Property<int>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("product_id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
                     b.Property<string>("IsUnderMaintenance")
                         .IsRequired()
@@ -408,18 +408,18 @@ namespace danj_backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("downPayment")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<float>("downPayment")
+                        .HasColumnType("real");
 
-                    b.Property<int>("installmentInterest")
-                        .HasColumnType("int");
+                    b.Property<float>("installmentInterest")
+                        .HasColumnType("real");
 
                     b.Property<string>("maintainedBy")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("monthlyPayment")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<float>("monthlyPayment")
+                        .HasColumnType("real");
 
                     b.Property<int>("monthsToPay")
                         .HasColumnType("int");
@@ -444,8 +444,8 @@ namespace danj_backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("productPrice")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<float>("productPrice")
+                        .HasColumnType("real");
 
                     b.Property<string>("productStatus")
                         .IsRequired()
@@ -471,13 +471,13 @@ namespace danj_backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("totalPayment")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<float>("totalPayment")
+                        .HasColumnType("real");
 
                     b.Property<DateTime>("updated_at")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("product_id");
+                    b.HasKey("id");
 
                     b.ToTable("product_management");
                 });

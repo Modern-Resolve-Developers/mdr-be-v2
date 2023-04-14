@@ -26,4 +26,8 @@
     <Content Include=".github\workflows\ci.yml" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations" />
+  </ItemGroup>
+
 </Project>
