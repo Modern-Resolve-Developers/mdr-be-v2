@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using danj_backend.DB;
 
@@ -11,9 +12,11 @@ using danj_backend.DB;
 namespace danj_backend.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230331084134_ProdFeatureCategory")]
+    partial class ProdFeatureCategory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -260,49 +263,6 @@ namespace danj_backend.Migrations
                     b.ToTable("authentication_history");
                 });
 
-            modelBuilder.Entity("danj_backend.Model.Customers", b =>
-                {
-                    b.Property<int>("customerId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("customerId"));
-
-                    b.Property<DateTime>("created_at")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("customerEmail")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("customerImageUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("customerName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("customerPassword")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("isstatus")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(1)");
-
-                    b.Property<DateTime>("updated_at")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("verified")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(1)");
-
-                    b.HasKey("customerId");
-
-                    b.ToTable("customers");
-                });
-
             modelBuilder.Entity("danj_backend.Model.JWTAuthentication", b =>
                 {
                     b.Property<int>("jwtId")
@@ -389,99 +349,6 @@ namespace danj_backend.Migrations
                     b.ToTable("mdr_task_management");
                 });
 
-            modelBuilder.Entity("danj_backend.Model.ProductManagement", b =>
-                {
-                    b.Property<int>("product_id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("product_id"));
-
-                    b.Property<string>("IsUnderMaintenance")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(1)");
-
-                    b.Property<DateTime>("created_at")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("created_by")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("downPayment")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("installmentInterest")
-                        .HasColumnType("int");
-
-                    b.Property<string>("maintainedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("monthlyPayment")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("monthsToPay")
-                        .HasColumnType("int");
-
-                    b.Property<string>("productCategory")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("productDescription")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("productFeatures")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("productImageUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("productName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("productPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("productStatus")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(1)");
-
-                    b.Property<string>("projectInstallment")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("projectScale")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("projectType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("repositoryName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("repositoryZipUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("totalPayment")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("updated_at")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("product_id");
-
-                    b.ToTable("product_management");
-                });
-
             modelBuilder.Entity("danj_backend.Model.Product_Features_Category", b =>
                 {
                     b.Property<int>("Id")
@@ -501,37 +368,6 @@ namespace danj_backend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("product_features_category");
-                });
-
-            modelBuilder.Entity("danj_backend.Model.SystemGenerator", b =>
-                {
-                    b.Property<int>("genCodeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("genCodeId"));
-
-                    b.Property<DateTime>("createdAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("product_id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(1)");
-
-                    b.Property<Guid>("systemCode")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("updatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("genCodeId");
-
-                    b.HasIndex("product_id");
-
-                    b.ToTable("system_gen");
                 });
 
             modelBuilder.Entity("danj_backend.Model.TokenModel", b =>
@@ -692,17 +528,6 @@ namespace danj_backend.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("danj_backend.Model.SystemGenerator", b =>
-                {
-                    b.HasOne("danj_backend.Model.ProductManagement", "ProductManagement")
-                        .WithMany()
-                        .HasForeignKey("product_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ProductManagement");
                 });
 #pragma warning restore 612, 618
         }

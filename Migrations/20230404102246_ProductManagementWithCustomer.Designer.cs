@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using danj_backend.DB;
 
@@ -11,9 +12,11 @@ using danj_backend.DB;
 namespace danj_backend.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230404102246_ProductManagementWithCustomer")]
+    partial class ProductManagementWithCustomer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -503,37 +506,6 @@ namespace danj_backend.Migrations
                     b.ToTable("product_features_category");
                 });
 
-            modelBuilder.Entity("danj_backend.Model.SystemGenerator", b =>
-                {
-                    b.Property<int>("genCodeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("genCodeId"));
-
-                    b.Property<DateTime>("createdAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("product_id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(1)");
-
-                    b.Property<Guid>("systemCode")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("updatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("genCodeId");
-
-                    b.HasIndex("product_id");
-
-                    b.ToTable("system_gen");
-                });
-
             modelBuilder.Entity("danj_backend.Model.TokenModel", b =>
                 {
                     b.Property<int>("Id")
@@ -692,17 +664,6 @@ namespace danj_backend.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("danj_backend.Model.SystemGenerator", b =>
-                {
-                    b.HasOne("danj_backend.Model.ProductManagement", "ProductManagement")
-                        .WithMany()
-                        .HasForeignKey("product_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ProductManagement");
                 });
 #pragma warning restore 612, 618
         }
