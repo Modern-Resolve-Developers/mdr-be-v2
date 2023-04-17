@@ -494,6 +494,10 @@ namespace danj_backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("value")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");

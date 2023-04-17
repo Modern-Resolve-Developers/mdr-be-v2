@@ -1,5 +1,6 @@
 ﻿using danj_backend.Data;
 using danj_backend.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace danj_backend.Controllers;
@@ -21,6 +22,23 @@ where TRepository : IProductFeatCategoryRepository<TEntity>
     public ActionResult fetchAllCategory()
     {
         var result = _repository.getAllMultiSelect();
+        return Ok(result);
+    }
+
+    [Authorize]
+    [Route("create-new-category"), HttpPost]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    public async Task<IActionResult> createNewCategory(TEntity entity)
+    {
+        await _repository.createNewCategory(entity);
+        return Ok(200);
+    }
+
+    [Authorize]
+    [Route("get-all-new-categories"), HttpGet]
+    public async Task<IActionResult> getAllNewCategories()
+    {
+        var result = await _repository.getAllNewCategories();
         return Ok(result);
     }
 }
