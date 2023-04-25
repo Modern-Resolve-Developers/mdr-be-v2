@@ -24,5 +24,6 @@ namespace danj_backend.DB
         public DbSet<ProductManagement> ProductManagements { get; set; }
         public DbSet<Customers> CustomersEnumerable { get; set; }
         public DbSet<SystemGenerator> SystemGenerators { get; set; }
+        public DbSet<Jitser> Jitsers { get; set; }
     }
 }

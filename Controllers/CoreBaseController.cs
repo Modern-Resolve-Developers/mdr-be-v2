@@ -52,7 +52,6 @@ namespace danj_backend.Controllers
             var result = repository.GetAllUsers();
             return Ok(result);
         }
-        [Authorize]
         [Route("uam-add"), HttpPost]
         public IActionResult addUAM(TEntity entity)
         {
@@ -68,7 +67,7 @@ namespace danj_backend.Controllers
             return Ok(result);
         }
 
-        [Authorize]
+        
         [Route("uam-check-email/{email}"), HttpGet]
         public ActionResult UAMCheckEmail([FromRoute] string email)
         {
