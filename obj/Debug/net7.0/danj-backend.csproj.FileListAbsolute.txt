@@ -253,3 +253,6 @@ C:\Users\miggy\Documents\digital_resolve_internal\mdr-be-v2\obj\Debug\net7.0\ref
 C:\Users\miggy\Documents\digital_resolve_internal\mdr-be-v2\obj\Debug\net7.0\danj-backend.pdb
 C:\Users\miggy\Documents\digital_resolve_internal\mdr-be-v2\obj\Debug\net7.0\danj-backend.genruntimeconfig.cache
 C:\Users\miggy\Documents\digital_resolve_internal\mdr-be-v2\obj\Debug\net7.0\ref\danj-backend.dll
+C:\Users\miggy\Documents\digital_resolve_internal\mdr-be-v2\bin\Debug\net7.0\BouncyCastle.Cryptography.dll
+C:\Users\miggy\Documents\digital_resolve_internal\mdr-be-v2\bin\Debug\net7.0\MailKit.dll
+C:\Users\miggy\Documents\digital_resolve_internal\mdr-be-v2\bin\Debug\net7.0\MimeKit.dll
