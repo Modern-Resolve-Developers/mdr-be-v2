@@ -31,4 +31,11 @@ where TRepository : IFPRepository<TEntity>
         var result = await repository.CheckVerificationCodeEntry(code, email);
         return Ok(result);
     }
+
+    [Route("resend-code-verification/{email}"), HttpPost]
+    public async Task<IActionResult> resendVerification([FromRoute] string email)
+    {
+        var result = await repository.ResendVerificationCode(email);
+        return Ok(result);
+    }
 }

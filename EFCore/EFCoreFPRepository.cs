@@ -1,4 +1,5 @@
-﻿using danj_backend.Data;
+﻿using System.Dynamic;
+using danj_backend.Data;
 using danj_backend.DB;
 using danj_backend.Helper;
 using danj_backend.Model;
@@ -28,7 +29,7 @@ where TContext : ApiDbContext
         DateTime expirationTime = DateTime.Now.AddHours(2);
         var code = verificationCodeGen.GenerateCode();
         var result = context.Set<TEntity>().Any(x => x.email == email);
-        var checkIsValid = context.Set<TEntity>().Where(x => x.email == email).FirstOrDefault();
+        var checkIsValid = context.Set<TEntity>().Where(x => x.email == email && x.isValid == Convert.ToChar("1")).FirstOrDefault();
         if (result)
         {
             if (checkIsValid.isValid == Convert.ToChar("1"))
@@ -110,31 +111,67 @@ where TContext : ApiDbContext
 
     public async Task<dynamic> CheckVerificationCodeEntry(string code, string email)
     {
-        var codeChecker = context.Set<TEntity>().Any(x => x.verificationCode == code);
-        var fpEntityAll = context.Set<TEntity>().Where(x => x.email == email).FirstOrDefault();
+        var codeChecker = context.Set<TEntity>().Any(x => x.verificationCode == code && x.isValid == Convert.ToChar("1"));
+        var fpEntityAll = context.Set<TEntity>().Where(x => x.email == email && x.isValid == Convert.ToChar("1")).FirstOrDefault();
         if (DateTime.Now > fpEntityAll.expiry)
         {
             /*
              * Verification code has been expired, client side must request another verification code from the backend
              */
-            FP fp = new FP();
-            fp.isValid = Convert.ToChar("0");
-            await context.SaveChangesAsync();
             return "expired";
         }
         else
         {
             if (codeChecker)
             {
-                FP fp = new FP();
-                fp.isValid = Convert.ToChar("0");
+                dynamic dynObject = new ExpandoObject();
+                fpEntityAll.isValid = Convert.ToChar("0");
+                dynObject.bundleData = fpEntityAll;
+                dynObject.message = "verified";
                 await context.SaveChangesAsync();
-                return "verified";
+                return dynObject;
             }
             else
             {
                 return "invalid_code";
             }
+        }
+    }
+
+    public async Task<dynamic> ResendVerificationCode(string email)
+    {
+        DateTime expirationTime = DateTime.Now.AddHours(2);
+        var code = verificationCodeGen.GenerateCode();
+        var result = context.Set<TEntity>().Any(x => x.email == email);
+        var checkIsValid = context.Set<TEntity>().Where(x => x.email == email).FirstOrDefault();
+        if (result)
+        {
+            if (checkIsValid.isValid == Convert.ToChar("1"))
+            {
+                if (checkIsValid.sentCounter >= 3)
+                {
+                    checkIsValid.isValid = Convert.ToChar("0");
+                    await context.SaveChangesAsync();
+                    return "max_3";
+                }
+                else
+                {
+                    checkIsValid.sentCounter = checkIsValid.sentCounter + 1;
+                    checkIsValid.verificationCode = code;
+                    checkIsValid.expiry = expirationTime;
+                    await SendEmailForgotPassword(email, code);
+                    await context.SaveChangesAsync();
+                    return "resend_success";
+                }
+            }
+            else
+            {
+                return "invalid_resend";
+            }
+        }
+        else
+        {
+            return "email_not_exist";
         }
     }
 }

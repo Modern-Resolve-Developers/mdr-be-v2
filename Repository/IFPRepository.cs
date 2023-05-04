@@ -8,4 +8,5 @@ public interface IFPRepository<T> where T : class, IFP
     public Task<dynamic> findAnyFPVerified(string email);
     Task SendEmailForgotPassword(string requestEmail, string code);
     Task<dynamic> CheckVerificationCodeEntry(string code, string email);
+    Task<dynamic> ResendVerificationCode(string email);
 }
