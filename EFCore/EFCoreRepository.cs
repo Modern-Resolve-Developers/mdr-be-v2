@@ -68,7 +68,7 @@ namespace danj_backend.EFCore
             {
                 t.Id,
                 t.firstname, t.lastname, t.email,
-                t.imgurl
+                t.imgurl, t.userType
             }).ToList();
         }
 

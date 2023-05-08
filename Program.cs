@@ -3,6 +3,8 @@ using System.Security.Claims;
 using System.Text;
 using danj_backend.Authentication;
 using danj_backend.DB;
+using danj_backend.EFCore.EFFP;
+using danj_backend.EFCore.EFJitser;
 using danj_backend.EFCore.EFProducts;
 using danj_backend.EFCore.EFSystemGen;
 using danj_backend.EFCore.EFUsers;
@@ -16,11 +18,15 @@ using Microsoft.OpenApi.Models;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 using danj_backend.Extensions;
 using danj_backend.JwtHelpers;
+using MailKit;
 using Microsoft.AspNetCore.Identity;
+using IMailService = danj_backend.Repository.IMailService;
+using MailService = danj_backend.Services.MailService;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
 
+builder.Services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
 
 builder.Services.AddDbContext<ApiDbContext>(options =>
     options.UseSqlServer(configuration["ConnectionStrings:prodenv"],
@@ -80,7 +86,8 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 Host.CreateDefaultBuilder(args)
 .ConfigureWebHostDefaults(webBuilder =>
 {
-    webBuilder.UseSetting("https_port", "8080");
+    webBuilder.UseUrls("http://localhost:5240");
+    webBuilder.UseStartup<WebApplication>();
 });
 
 
@@ -126,8 +133,10 @@ builder.Services.AddScoped<EFCoreFuncJWTRepository>();
 builder.Services.AddScoped<EFCoreFuncProdCategRepository>();
 builder.Services.AddScoped<EFCoreFuncProductManagement>();
 builder.Services.AddScoped<EFCoreFuncSystemGen>();
+builder.Services.AddScoped<EFCoreFuncJitser>();
+builder.Services.AddScoped<EFCoreFuncFP>();
 builder.Services.AddScoped<ApiKeyAuthFilter>();
-
+builder.Services.AddTransient<IMailService, MailService>();
 
 
 var app = builder.Build();

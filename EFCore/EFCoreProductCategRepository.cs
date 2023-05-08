@@ -19,4 +19,16 @@ public abstract class EFCoreProductCategRepository<TEntity, TContext> : IProduct
     {
         return context.Set<TEntity>().ToList();
     }
+
+    public async Task<TEntity> createNewCategory(TEntity entity)
+    {
+        context.Set<TEntity>().Add(entity);
+        await context.SaveChangesAsync();
+        return entity;
+    }
+
+    public async Task<List<TEntity>> getAllNewCategories()
+    {
+        return context.Set<TEntity>().ToList();
+    }
 }

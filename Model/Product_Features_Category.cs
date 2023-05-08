@@ -11,4 +11,5 @@ public class Product_Features_Category : IProdCategFeatures
     public int Id { get; set; }
     public string label { get; set; }
     public string value { get; set; }
+    public string type { get; set; }
 }
