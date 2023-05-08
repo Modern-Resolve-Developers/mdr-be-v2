@@ -2,7 +2,7 @@
 
 public interface IFP
 {
-    int id { get; set; }
+    int fpId { get; set; }
     string email { get; set; }
     int sentCounter { get; set; }
     string verificationCode { get; set; }

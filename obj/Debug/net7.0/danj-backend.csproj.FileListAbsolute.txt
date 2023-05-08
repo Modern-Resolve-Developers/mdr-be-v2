@@ -256,3 +256,6 @@ C:\Users\miggy\Documents\digital_resolve_internal\mdr-be-v2\obj\Debug\net7.0\ref
 C:\Users\miggy\Documents\digital_resolve_internal\mdr-be-v2\bin\Debug\net7.0\BouncyCastle.Cryptography.dll
 C:\Users\miggy\Documents\digital_resolve_internal\mdr-be-v2\bin\Debug\net7.0\MailKit.dll
 C:\Users\miggy\Documents\digital_resolve_internal\mdr-be-v2\bin\Debug\net7.0\MimeKit.dll
+C:\Users\jm4583104\OneDrive - Willis Towers Watson\Documents\proj\be\bin\Debug\net7.0\BouncyCastle.Cryptography.dll
+C:\Users\jm4583104\OneDrive - Willis Towers Watson\Documents\proj\be\bin\Debug\net7.0\MailKit.dll
+C:\Users\jm4583104\OneDrive - Willis Towers Watson\Documents\proj\be\bin\Debug\net7.0\MimeKit.dll

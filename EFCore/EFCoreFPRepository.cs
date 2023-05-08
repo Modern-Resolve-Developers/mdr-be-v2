@@ -2,11 +2,14 @@
 using danj_backend.Data;
 using danj_backend.DB;
 using danj_backend.Helper;
+using danj_backend.JwtHelpers;
 using danj_backend.Model;
 using danj_backend.Repository;
 using danj_backend.Services;
 using MailKit.Net.Smtp;
 using MailKit.Security;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using MimeKit;
 
@@ -18,45 +21,62 @@ where TContext : ApiDbContext
 {
     private readonly TContext context;
     private readonly MailSettings _mailSettings;
-    public EFCoreFPRepository(TContext context, IOptions<MailSettings> mailSettings)
+    private readonly UserManager<ApplicationAuthentication> _userManager;
+    public EFCoreFPRepository(TContext context, IOptions<MailSettings> mailSettings, UserManager<ApplicationAuthentication> userManager)
     {
         this.context = context;
         this._mailSettings = mailSettings.Value;
+        this._userManager = userManager;
     }
 
     public async Task<dynamic> findAnyFPVerified(string email)
     {
         DateTime expirationTime = DateTime.Now.AddHours(2);
         var code = verificationCodeGen.GenerateCode();
+        var checkIsValid = await context.Set<TEntity>().Where(x => x.email == email && x.isValid == Convert.ToChar("1")).FirstOrDefaultAsync();
         var result = context.Set<TEntity>().Any(x => x.email == email);
-        var checkIsValid = context.Set<TEntity>().Where(x => x.email == email && x.isValid == Convert.ToChar("1")).FirstOrDefault();
         if (result)
         {
-            if (checkIsValid.isValid == Convert.ToChar("1"))
+            if (checkIsValid != null)
             {
-                if (checkIsValid.sentCounter != 3)
+                if (checkIsValid.isValid == Convert.ToChar("1"))
                 {
-                    checkIsValid.sentCounter = checkIsValid.sentCounter + 1;
-                    checkIsValid.verificationCode = code;
-                    checkIsValid.expiry = expirationTime;
-                    await SendEmailForgotPassword(email, code);
-                    await context.SaveChangesAsync();
-                    return "update_fp";
+                    if (checkIsValid.sentCounter != 3)
+                    {
+                        checkIsValid.sentCounter = checkIsValid.sentCounter + 1;
+                        checkIsValid.verificationCode = code;
+                        checkIsValid.expiry = expirationTime;
+                        await SendEmailForgotPassword(email, code);
+                        await context.SaveChangesAsync();
+                        return "update_fp";
+                    }
+                    else
+                    {
+                        return "max_3";
+                    }
                 }
                 else
                 {
-                    
-                    checkIsValid.isValid = Convert.ToChar("0");
+                    /*
+                     * Digital Resolve Organization Property
+                     * Another API Call for resetting the sent Counter to 0 after the timeout from frontend.
+                     */
+                    FP fp = new FP();
+                    fp.email = email;
+                    fp.expiry = expirationTime;
+                    fp.sentCounter = fp.sentCounter + 1;
+                    fp.verificationCode = code;
+                    fp.isValid = Convert.ToChar("1");
+                    fp.currentDate = Convert.ToDateTime(System.DateTime.Now.ToString("MM/dd/yyyy"));
+                    fp.updatedDate = Convert.ToDateTime(System.DateTime.Now.ToString("MM/dd/yyyy"));
+                    context.Fps.Add(fp);
                     await context.SaveChangesAsync();
-                    return "max_3";
+                    await SendEmailForgotPassword(email, code);
+                    return "reset";
                 }
             }
             else
             {
-                /*
-                 * Digital Resolve Organization Property
-                 * Another API Call for resetting the sent Counter to 0 after the timeout from frontend.
-                 */
                 FP fp = new FP();
                 fp.email = email;
                 fp.expiry = expirationTime;
@@ -68,7 +88,7 @@ where TContext : ApiDbContext
                 context.Fps.Add(fp);
                 await context.SaveChangesAsync();
                 await SendEmailForgotPassword(email, code);
-                return "reset";
+                return "success";
             }
         }
         else
@@ -112,7 +132,7 @@ where TContext : ApiDbContext
     public async Task<dynamic> CheckVerificationCodeEntry(string code, string email)
     {
         var codeChecker = context.Set<TEntity>().Any(x => x.verificationCode == code && x.isValid == Convert.ToChar("1"));
-        var fpEntityAll = context.Set<TEntity>().Where(x => x.email == email && x.isValid == Convert.ToChar("1")).FirstOrDefault();
+        var fpEntityAll = await context.Set<TEntity>().Where(x => x.email == email && x.isValid == Convert.ToChar("1")).FirstOrDefaultAsync();
         if (DateTime.Now > fpEntityAll.expiry)
         {
             /*
@@ -143,7 +163,7 @@ where TContext : ApiDbContext
         DateTime expirationTime = DateTime.Now.AddHours(2);
         var code = verificationCodeGen.GenerateCode();
         var result = context.Set<TEntity>().Any(x => x.email == email);
-        var checkIsValid = context.Set<TEntity>().Where(x => x.email == email).FirstOrDefault();
+        var checkIsValid = await context.Set<TEntity>().Where(x => x.email == email).FirstOrDefaultAsync();
         if (result)
         {
             if (checkIsValid.isValid == Convert.ToChar("1"))
@@ -173,5 +193,26 @@ where TContext : ApiDbContext
         {
             return "email_not_exist";
         }
+    }
+
+    public async Task<dynamic> ChangePasswordWhenVerified(FPChangePassword fpChangePassword)
+    {
+        var breakdownUserIdentified =
+            await context.Set<TEntity>().Where(x => x.email == fpChangePassword.Email && x.verificationCode == fpChangePassword.currentVerificationCode).FirstOrDefaultAsync();
+        var userIdentifierIfAny = context.Set<TEntity>().Any(x => x.fpId == breakdownUserIdentified.fpId && x.isValid == Convert.ToChar("0") && x.verificationCode == fpChangePassword.currentVerificationCode);
+        var userChangePasswordEntity =
+            await context.Users.Where(x => x.email == fpChangePassword.Email).FirstOrDefaultAsync();
+        var jwtuser = await _userManager.FindByEmailAsync(fpChangePassword.Email);
+        if (userIdentifierIfAny)
+        {
+            userChangePasswordEntity.password = BCrypt.Net.BCrypt.HashPassword(fpChangePassword.NewPassword);
+            var code = await _userManager.GeneratePasswordResetTokenAsync(jwtuser);
+            var result = await _userManager.ResetPasswordAsync(jwtuser, code, fpChangePassword.NewPassword);
+            if (!result.Succeeded)
+                return "error_user_password_update";
+            await context.SaveChangesAsync();
+            return "succeeded";
+        }
+        return "not_verified";
     }
 }

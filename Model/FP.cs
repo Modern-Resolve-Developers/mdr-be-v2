@@ -8,7 +8,7 @@ public class FP : IFP
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int id { get; set; }
+    public int fpId { get; set; }
     public string email { get; set; }
     public int sentCounter { get; set; }
     public string verificationCode { get; set; }

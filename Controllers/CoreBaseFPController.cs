@@ -38,4 +38,11 @@ where TRepository : IFPRepository<TEntity>
         var result = await repository.ResendVerificationCode(email);
         return Ok(result);
     }
+
+    [Route("fp-change-password"), HttpPost]
+    public async Task<IActionResult> changePassword([FromBody] FPChangePassword fpChangePassword)
+    {
+        var result = await repository.ChangePasswordWhenVerified(fpChangePassword);
+        return Ok(result);
+    }
 }

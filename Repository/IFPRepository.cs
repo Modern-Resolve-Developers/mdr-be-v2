@@ -9,4 +9,5 @@ public interface IFPRepository<T> where T : class, IFP
     Task SendEmailForgotPassword(string requestEmail, string code);
     Task<dynamic> CheckVerificationCodeEntry(string code, string email);
     Task<dynamic> ResendVerificationCode(string email);
+    Task<dynamic> ChangePasswordWhenVerified(FPChangePassword fpChangePassword);
 }
