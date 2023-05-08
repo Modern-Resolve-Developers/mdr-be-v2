@@ -32,7 +32,7 @@ where TRepository : IJitserRepository<TEntity>
             return Ok(200);
         }
     }
-    [Authorize]
+    
     [Route("get-all-rooms"), HttpGet]
     public async Task<IActionResult> getAllRooms()
     {

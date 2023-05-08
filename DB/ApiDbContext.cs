@@ -6,11 +6,13 @@ namespace danj_backend.DB
 {
     public class ApiDbContext : IdentityDbContext<ApplicationAuthentication>
     {
+        // IdentityDbContext<ApplicationAuthentication>
         public ApiDbContext(DbContextOptions<ApiDbContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            // builder.Ignore<Users>();
         }
         public DbSet<Users> Users { get; set; }
         public DbSet<Tokenization> Tokenization { get; set; }
@@ -25,5 +27,6 @@ namespace danj_backend.DB
         public DbSet<Customers> CustomersEnumerable { get; set; }
         public DbSet<SystemGenerator> SystemGenerators { get; set; }
         public DbSet<Jitser> Jitsers { get; set; }
+        public DbSet<FP> Fps { get; set; }
     }
 }
