@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using danj_backend.Authentication;
 using danj_backend.DB;
+using danj_backend.EFCore.EFCustomers;
 using danj_backend.EFCore.EFFP;
 using danj_backend.EFCore.EFJitser;
 using danj_backend.EFCore.EFProducts;
@@ -29,7 +30,7 @@ ConfigurationManager configuration = builder.Configuration;
 builder.Services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
 
 builder.Services.AddDbContext<ApiDbContext>(options =>
-    options.UseSqlServer(configuration["ConnectionStrings:prodenv"],
+    options.UseSqlServer(configuration["ConnectionStrings:localenv"],
     providerOptions => providerOptions.EnableRetryOnFailure())
 );
 
@@ -124,7 +125,7 @@ builder.Services.AddSwaggerGen(c =>
     c.AddSecurityRequirement(requirement);
 });
 
-
+builder.Services.AddScoped<EFCoreFuncCustomers>();
 builder.Services.AddScoped<EFCoreUsersRepository>();
 builder.Services.AddScoped<EFCoreFuncTokenRepository>();
 builder.Services.AddScoped<EFCoreFuncAuthHistory>();
