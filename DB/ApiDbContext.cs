@@ -12,7 +12,18 @@ namespace danj_backend.DB
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            // builder.Ignore<Users>();
+            /*builder.Ignore<Users>();
+            builder.Ignore<Tokenization>();
+            builder.Ignore<Authentication_history>();
+            builder.Ignore<MDR_Task_Management>();
+            builder.Ignore<JWTAuthentication>();
+            builder.Ignore<TokenModel>();
+            builder.Ignore<Product_Features_Category>();
+            builder.Ignore<ProductManagement>();
+            builder.Ignore<Customers>();
+            builder.Ignore<SystemGenerator>();
+            builder.Ignore<Jitser>();
+            builder.Ignore<FP>();*/
         }
         public DbSet<Users> Users { get; set; }
         public DbSet<Tokenization> Tokenization { get; set; }
@@ -28,5 +39,6 @@ namespace danj_backend.DB
         public DbSet<SystemGenerator> SystemGenerators { get; set; }
         public DbSet<Jitser> Jitsers { get; set; }
         public DbSet<FP> Fps { get; set; }
+        public DbSet<JitsiJoinedPersons> JitsiJoinedPersonsEnumerable { get; set; }
     }
 }

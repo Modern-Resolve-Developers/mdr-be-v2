@@ -29,7 +29,7 @@ ConfigurationManager configuration = builder.Configuration;
 builder.Services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
 
 builder.Services.AddDbContext<ApiDbContext>(options =>
-    options.UseSqlServer(configuration["ConnectionStrings:prodenv"],
+    options.UseSqlServer(configuration["ConnectionStrings:localenv"],
     providerOptions => providerOptions.EnableRetryOnFailure())
 );
 
