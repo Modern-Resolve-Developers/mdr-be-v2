@@ -8,5 +8,8 @@ public interface IJitserRepository<T> where T : class, IJitser
     Task<T> storeMeetDetails(T entity);
     public Boolean meetDetailsCheck(Expression<Func<T, bool>> predicate);
 
-    Task<List<T>> getAllRooms();
+    Task<dynamic> getAllRooms();
+    Task<dynamic> WhenJoinMeet(int roomId, string name);
+    Task<dynamic> HangoutMeet(string name);
+    Task<dynamic> deleteRoom(int id);
 }

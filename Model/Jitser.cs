@@ -9,7 +9,6 @@ public class Jitser: IJitser
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int id { get; set; }
-    public string username { get; set; }
     public string roomName { get; set; }
     public string roomPassword { get; set; }
     public char isPrivate { get; set; }
