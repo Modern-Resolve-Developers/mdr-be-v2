@@ -12,8 +12,8 @@ using danj_backend.DB;
 namespace danj_backend.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20230505113826_fpInitial")]
-    partial class fpInitial
+    [Migration("20230518124927_settings_dashboard_migration")]
+    partial class settings_dashboard_migration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -104,11 +104,11 @@ namespace danj_backend.Migrations
 
             modelBuilder.Entity("danj_backend.Model.FP", b =>
                 {
-                    b.Property<int?>("id")
+                    b.Property<int>("fpId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("fpId"));
 
                     b.Property<DateTime>("currentDate")
                         .HasColumnType("datetime2");
@@ -134,7 +134,7 @@ namespace danj_backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("id");
+                    b.HasKey("fpId");
 
                     b.ToTable("fp_verifier");
                 });
@@ -202,13 +202,35 @@ namespace danj_backend.Migrations
                     b.Property<DateTime>("updatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("username")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("id");
 
                     b.ToTable("dg_jitser_meet");
+                });
+
+            modelBuilder.Entity("danj_backend.Model.JitsiJoinedPersons", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("createdAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("roomId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("updatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("jitsi_joined");
                 });
 
             modelBuilder.Entity("danj_backend.Model.MDR_Task_Management", b =>
@@ -388,6 +410,33 @@ namespace danj_backend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("product_features_category");
+                });
+
+            modelBuilder.Entity("danj_backend.Model.Settings", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
+
+                    b.Property<DateTime>("createdAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("dynamicDashboardEnabled")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(1)");
+
+                    b.Property<string>("settingsType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("updatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("id");
+
+                    b.ToTable("settings");
                 });
 
             modelBuilder.Entity("danj_backend.Model.SystemGenerator", b =>
