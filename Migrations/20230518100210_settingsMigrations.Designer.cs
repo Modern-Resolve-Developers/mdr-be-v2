@@ -12,8 +12,8 @@ using danj_backend.DB;
 namespace danj_backend.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20230509134146_jitsi_joined")]
-    partial class jitsi_joined
+    [Migration("20230518100210_settingsMigrations")]
+    partial class settingsMigrations
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,30 +25,31 @@ namespace danj_backend.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("danj_backend.Model.JitsiJoinedPersons", b =>
+            modelBuilder.Entity("danj_backend.Model.Settings", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
                     b.Property<DateTime>("createdAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("name")
+                    b.Property<string>("settingsJson")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("roomId")
-                        .HasColumnType("int");
+                    b.Property<string>("settingsType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("updatedAt")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("Id");
+                    b.HasKey("id");
 
-                    b.ToTable("jitsi_joined");
+                    b.ToTable("settings");
                 });
 #pragma warning restore 612, 618
         }

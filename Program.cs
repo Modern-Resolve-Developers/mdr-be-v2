@@ -6,6 +6,7 @@ using danj_backend.DB;
 using danj_backend.EFCore.EFFP;
 using danj_backend.EFCore.EFJitser;
 using danj_backend.EFCore.EFProducts;
+using danj_backend.EFCore.EFSettings;
 using danj_backend.EFCore.EFSystemGen;
 using danj_backend.EFCore.EFUsers;
 using danj_backend.Helper;
@@ -124,7 +125,7 @@ builder.Services.AddSwaggerGen(c =>
     c.AddSecurityRequirement(requirement);
 });
 
-
+builder.Services.AddScoped<EFCoreFuncSettings>();
 builder.Services.AddScoped<EFCoreUsersRepository>();
 builder.Services.AddScoped<EFCoreFuncTokenRepository>();
 builder.Services.AddScoped<EFCoreFuncAuthHistory>();
