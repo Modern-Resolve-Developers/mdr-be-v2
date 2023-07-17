@@ -38,6 +38,18 @@ builder.Services.AddIdentity<ApplicationAuthentication, IdentityRole>()
     .AddEntityFrameworkStores<ApiDbContext>()
     .AddDefaultTokenProviders();
 
+var passwordOptions = new PasswordOptions{
+    RequireDigit = false,
+    RequiredLength = 6,
+    RequireLowercase = false,
+    RequireNonAlphanumeric = false,
+    RequireUppercase = false
+};
+
+builder.Services.Configure<IdentityOptions>(options => {
+    options.Password = passwordOptions;
+});
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
