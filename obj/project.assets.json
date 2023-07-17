@@ -4461,19 +4461,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\jm4583104\\.nuget\\packages\\": {}
+    "C:\\Users\\miggy\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\jm4583104\\OneDrive - Willis Towers Watson\\Documents\\proj\\be\\danj-backend.csproj",
+      "projectUniqueName": "C:\\Users\\miggy\\Documents\\digital_resolve_internal\\mdr-be-v2\\danj-backend.csproj",
       "projectName": "danj-backend",
-      "projectPath": "C:\\Users\\jm4583104\\OneDrive - Willis Towers Watson\\Documents\\proj\\be\\danj-backend.csproj",
-      "packagesPath": "C:\\Users\\jm4583104\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\jm4583104\\OneDrive - Willis Towers Watson\\Documents\\proj\\be\\obj\\",
+      "projectPath": "C:\\Users\\miggy\\Documents\\digital_resolve_internal\\mdr-be-v2\\danj-backend.csproj",
+      "packagesPath": "C:\\Users\\miggy\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\miggy\\Documents\\digital_resolve_internal\\mdr-be-v2\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\jm4583104\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\miggy\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -4565,7 +4565,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.202\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.102\\RuntimeIdentifierGraph.json"
       }
     }
   }
