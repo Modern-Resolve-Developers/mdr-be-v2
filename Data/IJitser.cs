@@ -3,7 +3,6 @@
 public interface IJitser
 {
     int id { get; set; }
-    string username { get; set; }
     string roomName { get; set; }
     string roomPassword { get; set; }
     string roomUrl { get; set; }

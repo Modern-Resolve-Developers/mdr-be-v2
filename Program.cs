@@ -6,6 +6,7 @@ using danj_backend.DB;
 using danj_backend.EFCore.EFFP;
 using danj_backend.EFCore.EFJitser;
 using danj_backend.EFCore.EFProducts;
+using danj_backend.EFCore.EFSettings;
 using danj_backend.EFCore.EFSystemGen;
 using danj_backend.EFCore.EFUsers;
 using danj_backend.Helper;
@@ -29,13 +30,25 @@ ConfigurationManager configuration = builder.Configuration;
 builder.Services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
 
 builder.Services.AddDbContext<ApiDbContext>(options =>
-    options.UseSqlServer(configuration["ConnectionStrings:prodenv"],
+    options.UseSqlServer(configuration["ConnectionStrings:localenv"],
     providerOptions => providerOptions.EnableRetryOnFailure())
 );
 
 builder.Services.AddIdentity<ApplicationAuthentication, IdentityRole>()
     .AddEntityFrameworkStores<ApiDbContext>()
     .AddDefaultTokenProviders();
+
+var passwordOptions = new PasswordOptions{
+    RequireDigit = false,
+    RequiredLength = 6,
+    RequireLowercase = false,
+    RequireNonAlphanumeric = false,
+    RequireUppercase = false
+};
+
+builder.Services.Configure<IdentityOptions>(options => {
+    options.Password = passwordOptions;
+});
 
 builder.Services.AddAuthentication(options =>
 {
@@ -124,7 +137,7 @@ builder.Services.AddSwaggerGen(c =>
     c.AddSecurityRequirement(requirement);
 });
 
-
+builder.Services.AddScoped<EFCoreFuncSettings>();
 builder.Services.AddScoped<EFCoreUsersRepository>();
 builder.Services.AddScoped<EFCoreFuncTokenRepository>();
 builder.Services.AddScoped<EFCoreFuncAuthHistory>();
