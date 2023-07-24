@@ -4,6 +4,7 @@ namespace danj_backend.Data
     {
         int Id { get; set; }
         string email { get; set; }
+        string phoneNumber { get; set; }
         string password { get; set; }
         string firstname { get; set; }
         string middlename { get; set; }
