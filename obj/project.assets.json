@@ -4462,26 +4462,24 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\miggy\\.nuget\\packages\\": {}
+    "C:\\Users\\jm4583104\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\miggy\\Documents\\digital_resolve_internal\\mdr-be-v2\\danj-backend.csproj",
+      "projectUniqueName": "C:\\xampp\\htdocs\\dgr\\mdr-be-v2\\danj-backend.csproj",
       "projectName": "danj-backend",
-      "projectPath": "C:\\Users\\miggy\\Documents\\digital_resolve_internal\\mdr-be-v2\\danj-backend.csproj",
-      "packagesPath": "C:\\Users\\miggy\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\miggy\\Documents\\digital_resolve_internal\\mdr-be-v2\\obj\\",
+      "projectPath": "C:\\xampp\\htdocs\\dgr\\mdr-be-v2\\danj-backend.csproj",
+      "packagesPath": "C:\\Users\\jm4583104\\.nuget\\packages\\",
+      "outputPath": "C:\\xampp\\htdocs\\dgr\\mdr-be-v2\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\miggy\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "C:\\Users\\jm4583104\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net7.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -4570,7 +4568,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.102\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.202\\RuntimeIdentifierGraph.json"
       }
     }
   }

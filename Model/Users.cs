@@ -21,10 +21,11 @@ namespace danj_backend.Model
         [Required]
         public string password { get; set; }
         public string? imgurl { get; set; }
-        public char isstatus { get ; set; }
+        public char isstatus { get; set; }
         public char verified { get; set; }
         public DateTime created_at { get; set; }
         public DateTime updated_at { get; set; }
         public char userType { get; set; }
+        public string phoneNumber { get; set; }
     }
 }
