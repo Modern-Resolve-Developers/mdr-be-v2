@@ -25,6 +25,7 @@ namespace danj_backend.DB
             // builder.Ignore<Jitser>();
             // builder.Ignore<FP>();
             // builder.Ignore<JitsiJoinedPersons>();
+            // builder.Ignore<Settings>();
         }
         public DbSet<Users> Users { get; set; }
         public DbSet<Tokenization> Tokenization { get; set; }

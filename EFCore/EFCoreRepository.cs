@@ -40,7 +40,7 @@ namespace danj_backend.EFCore
         public async Task<bool> DeleteUAM(int id)
         {
             var entity = await context.Set<TEntity>().FindAsync(id);
-            if(entity == null)
+            if (entity == null)
             {
                 return false;
             }
@@ -52,7 +52,7 @@ namespace danj_backend.EFCore
         public async Task<bool> DeleteUsers(int id)
         {
             var entity = await context.Set<TEntity>().FindAsync(id);
-            if(entity == null)
+            if (entity == null)
             {
                 return false;
             }
@@ -67,8 +67,12 @@ namespace danj_backend.EFCore
             return context.Set<TEntity>().Where(predicate).Select(t => new
             {
                 t.Id,
-                t.firstname, t.lastname, t.email,
-                t.imgurl, t.userType
+                t.firstname,
+                t.lastname,
+                t.email,
+                t.imgurl,
+                t.userType,
+                t.middlename
             }).ToList();
         }
 
@@ -94,7 +98,7 @@ namespace danj_backend.EFCore
 
         public TEntity UAM(TEntity entity)
         {
-            if(entity.userType == Convert.ToChar("1"))
+            if (entity.userType == Convert.ToChar("1"))
             {
                 string hashpassword = BCrypt.Net.BCrypt.HashPassword(entity.password);
                 entity.password = hashpassword;
@@ -107,8 +111,8 @@ namespace danj_backend.EFCore
                 context.Set<TEntity>().Add(entity);
                 context.SaveChanges();
                 return entity;
-            } 
-            else if(entity.userType ==Convert.ToChar("2"))
+            }
+            else if (entity.userType == Convert.ToChar("2"))
             {
                 string hashpassword = BCrypt.Net.BCrypt.HashPassword(entity.password);
                 entity.password = hashpassword;
@@ -121,7 +125,7 @@ namespace danj_backend.EFCore
                 context.Set<TEntity>().Add(entity);
                 context.SaveChanges();
                 return entity;
-            } 
+            }
             else
             {
                 string hashpassword = BCrypt.Net.BCrypt.HashPassword(entity.password);
@@ -141,7 +145,7 @@ namespace danj_backend.EFCore
         public bool UpdateUsersPersonalDetails(PersonalDetails personalDetails)
         {
             var entity = context.Users.FirstOrDefault(x => x.Id == personalDetails.Id);
-            if(entity != null)
+            if (entity != null)
             {
                 entity.firstname = personalDetails.firstname;
                 entity.middlename = personalDetails.middlename;
@@ -154,7 +158,7 @@ namespace danj_backend.EFCore
 
         public bool UpdateUsersVerifiedAndStatus(string propstype, int id)
         {
-            switch(propstype)
+            switch (propstype)
             {
                 case "unlock":
                     var entityUnlock = context.Users.FirstOrDefault(x => x.Id == id);
@@ -176,7 +180,7 @@ namespace danj_backend.EFCore
                     break;
                 case "verify":
                     var entityVerify = context.Users.FirstOrDefault(x => x.Id == id);
-                    if(entityVerify != null)
+                    if (entityVerify != null)
                     {
                         entityVerify.verified = Convert.ToChar("1");
                         context.SaveChanges();
