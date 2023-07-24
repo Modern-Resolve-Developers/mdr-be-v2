@@ -226,33 +226,6 @@ namespace danj_backend.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("danj_backend.Model.Settings", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
-
-                    b.Property<DateTime>("createdAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("dynamicDashboardEnabled")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(1)");
-
-                    b.Property<string>("settingsType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("updatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("id");
-
-                    b.ToTable("settings");
-                });
-
             modelBuilder.Entity("danj_backend.Model.Users", b =>
                 {
                     b.Property<int>("Id")

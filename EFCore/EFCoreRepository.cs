@@ -26,8 +26,8 @@ namespace danj_backend.EFCore
         {
             string hashpassword = BCrypt.Net.BCrypt.HashPassword(entity.password);
             entity.password = hashpassword;
-            entity.isstatus = Convert.ToChar("1");
-            entity.verified = Convert.ToChar("0");
+            entity.isstatus = Convert.ToChar("0");
+            entity.verified = Convert.ToChar("1");
             entity.imgurl = "No image";
             entity.userType = Convert.ToChar("1");
             entity.created_at = Convert.ToDateTime(System.DateTime.Now.ToString("yyyy/MM/dd"));

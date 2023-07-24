@@ -12,8 +12,8 @@ using danj_backend.DB;
 namespace danj_backend.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20230724022218_Users_AddPhoneNumberColumn")]
-    partial class Users_AddPhoneNumberColumn
+    [Migration("20230724093837_UpdatePhoneNumberOnUsers")]
+    partial class UpdatePhoneNumberOnUsers
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -227,33 +227,6 @@ namespace danj_backend.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("danj_backend.Model.Settings", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
-
-                    b.Property<DateTime>("createdAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("dynamicDashboardEnabled")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(1)");
-
-                    b.Property<string>("settingsType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("updatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("id");
-
-                    b.ToTable("settings");
                 });
 
             modelBuilder.Entity("danj_backend.Model.Users", b =>
