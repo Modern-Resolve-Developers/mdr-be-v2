@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using danj_backend.Data;
 
 namespace danj_backend.Model;
-[Table("settings")]
+[Table("dgr_settings")]
 public class Settings : ISettings
 {
     [Key]
