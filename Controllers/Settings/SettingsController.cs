@@ -8,5 +8,5 @@ namespace danj_backend.Controllers.Settings;
 [ServiceFilter(typeof(ApiKeyAuthFilter))]
 public class SettingsController : CoreBaseSettingsController<Model.Settings, EFCoreFuncSettings>
 {
-    public SettingsController(EFCoreFuncSettings repository) : base(repository) {}
+    public SettingsController(EFCoreFuncSettings repository) : base(repository) { }
 }
