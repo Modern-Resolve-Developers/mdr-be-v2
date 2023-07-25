@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace danj_backend.Controllers
 {
-    
+
     [Route("api/[controller]")]
     [ApiController]
     public abstract class CoreBaseController<TEntity, TRepository> : ControllerBase
@@ -45,7 +45,7 @@ namespace danj_backend.Controllers
             }
         }
 
-        
+
         [Route("find-all-users-report"), HttpGet]
         public ActionResult FindAllUsers()
         {
@@ -67,11 +67,11 @@ namespace danj_backend.Controllers
             return Ok(result);
         }
 
-        
+
         [Route("uam-check-email/{email}"), HttpGet]
         public ActionResult UAMCheckEmail([FromRoute] string email)
         {
-            var checkEmailAny = repository.FindAny(x => x.email== email);
+            var checkEmailAny = repository.FindAny(x => x.email == email);
             if (checkEmailAny)
             {
                 return Ok("email_exist");
@@ -115,7 +115,7 @@ namespace danj_backend.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public ActionResult UpdatePersonalDetails([FromBody] PersonalDetails personalDetails)
         {
-            if(repository.UpdateUsersPersonalDetails(personalDetails))
+            if (repository.UpdateUsersPersonalDetails(personalDetails))
             {
                 return Ok(200);
             }
@@ -127,7 +127,7 @@ namespace danj_backend.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public ActionResult UpdateUsersVerifiedStatus([FromRoute] string propstype, int id)
         {
-            if(repository.UpdateUsersVerifiedAndStatus(propstype, id))
+            if (repository.UpdateUsersVerifiedAndStatus(propstype, id))
             {
                 return Ok(200);
             }
@@ -142,8 +142,16 @@ namespace danj_backend.Controllers
             return Ok(200);
         }
 
+        [Authorize]
+        [Route("get-router/{requestId}"), HttpGet]
+        public async Task<ActionResult> GetRouter([FromRoute] Guid requestId)
+        {
+            var result = await repository.FindRouter(requestId);
+            return Ok(result);
+        }
+
         [Route("login"), HttpPost]
-        public ActionResult accountLogin([FromBody] LoginHelper loginHelper)
+        public async Task<IActionResult> accountLogin([FromBody] LoginHelper loginHelper)
         {
             try
             {
@@ -152,7 +160,7 @@ namespace danj_backend.Controllers
 
                 bool findUserByEmailBool = repository.FindAny(x => x.email == email);
                 var findUserByEmailDefault = repository.FindEmailExist(x => x.email == email);
-
+                dynamic dynObject = new ExpandoObject();
                 if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
                 {
                     return Ok("EMPTY");
@@ -162,23 +170,91 @@ namespace danj_backend.Controllers
                     string EncryptedPassword = findUserByEmailDefault == null ? "" : findUserByEmailDefault.password;
                     if (findUserByEmailBool)
                     {
-                        if(findUserByEmailDefault.isstatus == Convert.ToChar('0'))
+                        if (findUserByEmailDefault.isstatus == Convert.ToChar("0"))
                         {
-                            if (BCrypt.Net.BCrypt.Verify(password, EncryptedPassword))
+                            if (findUserByEmailDefault.userType == 1)
                             {
-                                dynamic dynObject = new ExpandoObject();
-
-                                var getResult = repository.FetchAllUsersInformation(x => x.email == email);
-
-                                dynObject.message = "SUCCESS_LOGIN";
-                                dynObject.bundle = getResult;
-                                return Ok(dynObject);
+                                if (BCrypt.Net.BCrypt.Verify(password, EncryptedPassword))
+                                {
+                                    if (await repository.PostNewDynamicRouteWhenLoginProcessed(new()
+                                    {
+                                        access_level = findUserByEmailDefault.userType,
+                                        exactPath = "/sys-admin/auth/dashboardauth",
+                                        requestId = Guid.NewGuid(),
+                                        ToWhomRoute = "Administrator",
+                                        created_at = DateTime.Today
+                                    }) == 301)
+                                    {
+                                        var findCorrespondingRouter = repository.FindCorrespondingRoute(
+                                            x => x.access_level == findUserByEmailDefault.userType
+                                        );
+                                        var getResult = repository.FetchAllUsersInformation(x => x.email == email);
+                                        dynObject.message = "SUCCESS_LOGIN";
+                                        dynObject.bundle = getResult;
+                                        dynObject.routeInfo = findCorrespondingRouter.requestId;
+                                        return Ok(dynObject);
+                                    }
+                                    else
+                                    {
+                                        var findCorrespondingRouter = repository.FindCorrespondingRoute(
+                                            x => x.access_level == findUserByEmailDefault.userType
+                                        );
+                                        var getResult = repository.FetchAllUsersInformation(x => x.email == email);
+                                        dynObject.message = "SUCCESS_LOGIN";
+                                        dynObject.bundle = getResult;
+                                        dynObject.routeInfo = findCorrespondingRouter.requestId;
+                                        return Ok(dynObject);
+                                    }
+                                }
+                                else
+                                {
+                                    return Ok("INVALID_PASSWORD");
+                                }
+                            }
+                            else if (findUserByEmailDefault.userType == 2)
+                            {
+                                return Ok("DEVELOPER_ACCOUNT");
                             }
                             else
                             {
-                                return Ok("INVALID_PASSWORD");
+                                if (BCrypt.Net.BCrypt.Verify(password, EncryptedPassword))
+                                {
+                                    if (await repository.PostNewDynamicRouteWhenLoginProcessed(new()
+                                    {
+                                        access_level = findUserByEmailDefault.userType,
+                                        exactPath = "no-route-current-available-for-client",
+                                        requestId = Guid.NewGuid(),
+                                        ToWhomRoute = "Administrator",
+                                        created_at = DateTime.Today
+                                    }) == 301)
+                                    {
+                                        var findCorrespondingRouter = repository.FindCorrespondingRoute(
+                                            x => x.access_level == findUserByEmailDefault.userType
+                                        );
+                                        var getResult = repository.FetchAllUsersInformation(x => x.email == email);
+                                        dynObject.message = "SUCCESS_LOGIN";
+                                        dynObject.bundle = getResult;
+                                        dynObject.routeInfo = findCorrespondingRouter.requestId;
+                                        return Ok(dynObject);
+                                    }
+                                    else
+                                    {
+                                        var findCorrespondingRouter = repository.FindCorrespondingRoute(
+                                            x => x.access_level == findUserByEmailDefault.userType
+                                        );
+                                        var getResult = repository.FetchAllUsersInformation(x => x.email == email);
+                                        dynObject.message = "SUCCESS_LOGIN";
+                                        dynObject.bundle = getResult;
+                                        dynObject.routeInfo = findCorrespondingRouter.requestId;
+                                        return Ok(dynObject);
+                                    }
+                                }
+                                else
+                                {
+                                    return Ok("INVALID_PASSWORD");
+                                }
                             }
-                        } 
+                        }
                         else
                         {
                             return Ok("ACCOUNT_LOCK");

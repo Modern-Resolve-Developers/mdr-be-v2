@@ -26,6 +26,7 @@ namespace danj_backend.DB
             // builder.Ignore<FP>();
             // builder.Ignore<JitsiJoinedPersons>();
             // builder.Ignore<Settings>();
+            // builder.Ignore<DynamicRouting>();
         }
         public DbSet<Users> Users { get; set; }
         public DbSet<Tokenization> Tokenization { get; set; }
@@ -43,5 +44,6 @@ namespace danj_backend.DB
         public DbSet<FP> Fps { get; set; }
         public DbSet<JitsiJoinedPersons> JitsiJoinedPersonsEnumerable { get; set; }
         public DbSet<Settings> SettingsEnu { get; set; }
+        public DbSet<DynamicRouting> dynamicRoutings { get; set; }
     }
 }

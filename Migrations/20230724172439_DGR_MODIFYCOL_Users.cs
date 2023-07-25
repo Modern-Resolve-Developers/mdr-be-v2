@@ -6,32 +6,22 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace danj_backend.Migrations
 {
     /// <inheritdoc />
-    public partial class Users_AddPhoneNumberColumn : Migration
+    public partial class DGR_MODIFYCOL_Users : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-
-
-            migrationBuilder.AddColumn<string>(
-                name: "phoneNumber",
+            migrationBuilder.AlterColumn<int>(
+                name: "userType",
                 table: "users",
-                type: "nvarchar(max)",
                 nullable: false,
-                defaultValue: "");
-
-
+                oldClrType: typeof(char)
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-
-
-            migrationBuilder.DropColumn(
-                name: "phoneNumber",
-                table: "users");
-
 
         }
     }

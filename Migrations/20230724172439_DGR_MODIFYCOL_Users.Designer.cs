@@ -12,8 +12,8 @@ using danj_backend.DB;
 namespace danj_backend.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20230724022629_AddSettingsObj")]
-    partial class AddSettingsObj
+    [Migration("20230724172439_DGR_MODIFYCOL_Users")]
+    partial class DGR_MODIFYCOL_Users
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -229,33 +229,6 @@ namespace danj_backend.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("danj_backend.Model.Settings", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
-
-                    b.Property<DateTime>("createdAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("dynamicDashboardEnabled")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(1)");
-
-                    b.Property<string>("settingsType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("updatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("id");
-
-                    b.ToTable("settings");
-                });
-
             modelBuilder.Entity("danj_backend.Model.Users", b =>
                 {
                     b.Property<int>("Id")
@@ -300,9 +273,8 @@ namespace danj_backend.Migrations
                     b.Property<DateTime>("updated_at")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("userType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(1)");
+                    b.Property<int>("userType")
+                        .HasColumnType("int");
 
                     b.Property<string>("verified")
                         .IsRequired()
