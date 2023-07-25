@@ -14,6 +14,8 @@ namespace danj_backend.Repository
 
         public dynamic FetchAllUsersInformation(Expression<Func<T, bool>> predicate);
 
+        public dynamic FindCorrespondingRoute(Expression<Func<DynamicRouting, bool>> predicate);
+
         public Boolean FindUsersExists(int id);
 
         public List<T> GetAllUsers();
@@ -27,5 +29,9 @@ namespace danj_backend.Repository
         public Task<Boolean> DeleteUAM(int id);
 
         public Task<Boolean> DeleteUsers(int id);
+
+        public Task<dynamic> PostNewDynamicRouteWhenLoginProcessed(DynamicRouting dynamicRouting);
+
+        public Task<dynamic> FindRouter(Guid requestId);
     }
 }

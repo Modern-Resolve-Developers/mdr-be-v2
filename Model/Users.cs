@@ -25,7 +25,7 @@ namespace danj_backend.Model
         public char verified { get; set; }
         public DateTime created_at { get; set; }
         public DateTime updated_at { get; set; }
-        public char userType { get; set; }
+        public int userType { get; set; }
         public string phoneNumber { get; set; }
     }
 }
