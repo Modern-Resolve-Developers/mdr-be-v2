@@ -6,50 +6,67 @@ namespace danj_backend.Helper
 {
     public class EncryptionAlgo
     {
-        private byte[] DeriveKeyFromData(string data)
+        
+        private readonly byte[] _key;
+
+        public EncryptionAlgo(string key)
         {
-            var emptySalt = Array.Empty<byte>();
-            var iterations = 1000;
-            var desiredKeyLength = 16;
-            var hashMethod = HashAlgorithmName.SHA384;
-            return Rfc2898DeriveBytes.Pbkdf2(Encoding.Unicode.GetBytes(data),
-            emptySalt,
-            iterations,
-            hashMethod,
-            desiredKeyLength);
+            _key = Encoding.UTF8.GetBytes(key);
         }
-        private byte[] IV =
+        public string EncryptString(string plainText)
         {
-            0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
-            0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16
-        };
-        public async Task<byte[]> EncryptAsync(string clearText, string passphrase)
-        {
-            using Aes aes = Aes.Create();
-            aes.Key = DeriveKeyFromData(passphrase);
-            aes.IV = IV;
+            byte[] encryptedBytes;
+            using (Aes aesAlg = Aes.Create())
+            {
+                aesAlg.Key = _key;
+                aesAlg.Mode = CipherMode.CBC;
+                aesAlg.GenerateIV();
 
-            using MemoryStream output = new();
-            using CryptoStream cryptoStream = new(output, aes.CreateEncryptor(), CryptoStreamMode.Write);
+                ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
 
-            await cryptoStream.WriteAsync(Encoding.Unicode.GetBytes(clearText));
-            await cryptoStream.FlushFinalBlockAsync();
+                byte[] plainBytes = Encoding.UTF8.GetBytes(plainText);
 
-            return output.ToArray();
+                using (var msEncrypt = new System.IO.MemoryStream())
+                {
+                    msEncrypt.Write(aesAlg.IV, 0, aesAlg.IV.Length); // Write the IV to the beginning of the stream
+                    using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                    {
+                        csEncrypt.Write(plainBytes, 0, plainBytes.Length);
+                        csEncrypt.FlushFinalBlock();
+                    }
+                    encryptedBytes = msEncrypt.ToArray();
+                }
+            }
+            return Convert.ToBase64String(encryptedBytes);
         }
-        public async Task<string> DecryptAsync(byte[] encrypted, string passphrase)
+
+        public string Decrypt(string cipherText)
         {
-            using Aes aes = Aes.Create();
-            aes.Key = DeriveKeyFromData(passphrase);
-            aes.IV = IV;
+            byte[] cipherBytes = Convert.FromBase64String(cipherText);
 
-            using MemoryStream input = new(encrypted);
-            using CryptoStream cryptoStream = new(input, aes.CreateDecryptor(), CryptoStreamMode.Read);
+            string decryptedText;
+            using (Aes aesAlg = Aes.Create())
+            {
+                aesAlg.Key = _key;
+                aesAlg.Mode = CipherMode.CBC;
+                byte[] iv = new byte[aesAlg.BlockSize / 8];
+                Array.Copy(cipherBytes, iv, iv.Length);
+                aesAlg.IV = iv;
 
-            using MemoryStream output = new();
-            await cryptoStream.CopyToAsync(output);
+                ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
 
-            return Encoding.Unicode.GetString(output.ToArray());
+                using (var msDecrypt = new System.IO.MemoryStream(cipherBytes, iv.Length, cipherBytes.Length - iv.Length))
+                {
+                    using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                    {
+                        using (var srDecrypt = new System.IO.StreamReader(csDecrypt))
+                        {
+                            decryptedText = srDecrypt.ReadToEnd();
+                        }
+                    }
+                }
+            }
+            return decryptedText;
         }
     }
 }

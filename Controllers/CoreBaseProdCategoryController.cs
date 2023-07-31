@@ -17,7 +17,8 @@ where TRepository : IProductFeatCategoryRepository<TEntity>
     {
         this._repository = repository;
     }
-
+    
+    [Authorize]
     [Route("fetch-all-category"), HttpGet]
     public ActionResult fetchAllCategory()
     {

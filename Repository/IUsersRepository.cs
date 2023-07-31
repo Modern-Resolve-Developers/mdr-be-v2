@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using danj_backend.Data;
 using danj_backend.Helper;
+using danj_backend.Helper.Router;
 using danj_backend.Model;
 
 namespace danj_backend.Repository
@@ -30,8 +31,16 @@ namespace danj_backend.Repository
 
         public Task<Boolean> DeleteUsers(int id);
 
-        public Task<dynamic> PostNewDynamicRouteWhenLoginProcessed(DynamicRouting dynamicRouting);
+        public Task<dynamic> PostNewDynamicRouteWhenLoginProcessed(string dynamicRouting);
 
-        public Task<dynamic> FindRouter(Guid requestId);
+        public Task<dynamic> FindRouter(RouteWithRequestId pRequestId);
+
+        public Task<dynamic> GoogleAccountEmailVerifier(string email);
+
+        public Task<dynamic> CustomerAccountCreation(T entity, string key);
+
+        public Task<dynamic> CustomerCheckEmail(string email);
+
+        public Boolean CheckUsersData();
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace danj_backend.Controllers;
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public abstract class CoreBaseProductManagementController<TEntity, TRepository> : ControllerBase

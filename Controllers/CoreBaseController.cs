@@ -6,6 +6,7 @@ using danj_backend.Repository;
 using danj_backend.Helper;
 using danj_backend.DB;
 using System.Dynamic;
+using danj_backend.Helper.Router;
 using Microsoft.AspNetCore.Authorization;
 
 namespace danj_backend.Controllers
@@ -45,13 +46,14 @@ namespace danj_backend.Controllers
             }
         }
 
-
+        [Authorize]
         [Route("find-all-users-report"), HttpGet]
         public ActionResult FindAllUsers()
         {
             var result = repository.GetAllUsers();
             return Ok(result);
         }
+        [Authorize]
         [Route("uam-add"), HttpPost]
         public IActionResult addUAM(TEntity entity)
         {
@@ -67,7 +69,7 @@ namespace danj_backend.Controllers
             return Ok(result);
         }
 
-
+        [Authorize]
         [Route("uam-check-email/{email}"), HttpGet]
         public ActionResult UAMCheckEmail([FromRoute] string email)
         {
@@ -143,13 +145,46 @@ namespace danj_backend.Controllers
         }
 
         [Authorize]
-        [Route("get-router/{requestId}"), HttpGet]
-        public async Task<ActionResult> GetRouter([FromRoute] Guid requestId)
+        [Route("get-router"), HttpPost]
+        public async Task<ActionResult> GetRouter([FromBody] RouteWithRequestId pRequestId)
         {
-            var result = await repository.FindRouter(requestId);
+            var result = await repository.FindRouter(pRequestId);
+            return Ok(result);
+        }   
+
+        [Route("google-check-verify/{email}"), HttpGet]
+        public async Task<IActionResult> GoogleCheckAccount([FromRoute] string email)
+        {
+            var result = await repository.GoogleAccountEmailVerifier(email);
             return Ok(result);
         }
 
+        [Route("account-setup-checker"), HttpGet]
+        public ActionResult CheckAccountSetup()
+        {
+            return Ok(repository.CheckUsersData());
+        }
+
+        [Route("customer-account-creation/{key}"), HttpPost]
+        public async Task<IActionResult> CustomerAccountCreation([FromBody] TEntity entity, [FromRoute] string key)
+        {
+            var result = await repository.CustomerAccountCreation(entity, key);
+            return Ok(result);
+        }
+
+        [Route("customer-check-email/{email}"), HttpGet]
+        public async Task<IActionResult> CheckEmailOnCustomerRegistration([FromRoute] string email)
+        {
+            var result = await repository.CustomerCheckEmail(email);
+            return Ok(result);
+        }
+
+        [Route("dynamic-route"), HttpPost]
+        public async Task<IActionResult> PostNewDynamicRoutes([FromBody] PostNewRoutesParams postNewRoutesParams)
+        {
+            var result = await repository.PostNewDynamicRouteWhenLoginProcessed(postNewRoutesParams.JsonRoutes);
+            return Ok(result);
+        }
         [Route("login"), HttpPost]
         public async Task<IActionResult> accountLogin([FromBody] LoginHelper loginHelper)
         {
@@ -176,35 +211,14 @@ namespace danj_backend.Controllers
                             {
                                 if (BCrypt.Net.BCrypt.Verify(password, EncryptedPassword))
                                 {
-                                    if (await repository.PostNewDynamicRouteWhenLoginProcessed(new()
-                                    {
-                                        access_level = findUserByEmailDefault.userType,
-                                        exactPath = "/sys-admin/auth/dashboardauth",
-                                        requestId = Guid.NewGuid(),
-                                        ToWhomRoute = "Administrator",
-                                        created_at = DateTime.Today
-                                    }) == 301)
-                                    {
-                                        var findCorrespondingRouter = repository.FindCorrespondingRoute(
-                                            x => x.access_level == findUserByEmailDefault.userType
-                                        );
-                                        var getResult = repository.FetchAllUsersInformation(x => x.email == email);
-                                        dynObject.message = "SUCCESS_LOGIN";
-                                        dynObject.bundle = getResult;
-                                        dynObject.routeInfo = findCorrespondingRouter.requestId;
-                                        return Ok(dynObject);
-                                    }
-                                    else
-                                    {
-                                        var findCorrespondingRouter = repository.FindCorrespondingRoute(
-                                            x => x.access_level == findUserByEmailDefault.userType
-                                        );
-                                        var getResult = repository.FetchAllUsersInformation(x => x.email == email);
-                                        dynObject.message = "SUCCESS_LOGIN";
-                                        dynObject.bundle = getResult;
-                                        dynObject.routeInfo = findCorrespondingRouter.requestId;
-                                        return Ok(dynObject);
-                                    }
+                                    var findCorrespondingRouter = repository.FindCorrespondingRoute(
+                                        x => x.access_level == findUserByEmailDefault.userType
+                                    );
+                                    var getResult = repository.FetchAllUsersInformation(x => x.email == email);
+                                    dynObject.message = "SUCCESS_LOGIN";
+                                    dynObject.bundle = getResult;
+                                    dynObject.routeInfo = findCorrespondingRouter.requestId;
+                                    return Ok(dynObject);
                                 }
                                 else
                                 {
@@ -219,35 +233,14 @@ namespace danj_backend.Controllers
                             {
                                 if (BCrypt.Net.BCrypt.Verify(password, EncryptedPassword))
                                 {
-                                    if (await repository.PostNewDynamicRouteWhenLoginProcessed(new()
-                                    {
-                                        access_level = findUserByEmailDefault.userType,
-                                        exactPath = "no-route-current-available-for-client",
-                                        requestId = Guid.NewGuid(),
-                                        ToWhomRoute = "Administrator",
-                                        created_at = DateTime.Today
-                                    }) == 301)
-                                    {
-                                        var findCorrespondingRouter = repository.FindCorrespondingRoute(
-                                            x => x.access_level == findUserByEmailDefault.userType
-                                        );
-                                        var getResult = repository.FetchAllUsersInformation(x => x.email == email);
-                                        dynObject.message = "SUCCESS_LOGIN";
-                                        dynObject.bundle = getResult;
-                                        dynObject.routeInfo = findCorrespondingRouter.requestId;
-                                        return Ok(dynObject);
-                                    }
-                                    else
-                                    {
-                                        var findCorrespondingRouter = repository.FindCorrespondingRoute(
-                                            x => x.access_level == findUserByEmailDefault.userType
-                                        );
-                                        var getResult = repository.FetchAllUsersInformation(x => x.email == email);
-                                        dynObject.message = "SUCCESS_LOGIN";
-                                        dynObject.bundle = getResult;
-                                        dynObject.routeInfo = findCorrespondingRouter.requestId;
-                                        return Ok(dynObject);
-                                    }
+                                    var findCorrespondingRouter = repository.FindCorrespondingRoute(
+                                        x => x.access_level == findUserByEmailDefault.userType
+                                    );
+                                    var getResult = repository.FetchAllUsersInformation(x => x.email == email);
+                                    dynObject.message = "SUCCESS_LOGIN";
+                                    dynObject.bundle = getResult;
+                                    dynObject.routeInfo = findCorrespondingRouter.requestId;
+                                    return Ok(dynObject);
                                 }
                                 else
                                 {
