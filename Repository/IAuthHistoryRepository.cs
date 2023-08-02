@@ -12,5 +12,6 @@ namespace danj_backend.Repository
 
         public Boolean FindInAuthHistoryIfExist(Expression<Func<T, bool>> predicate);
 
+        public Task<dynamic> findSecuredRoute(int uuid);
     }
 }
