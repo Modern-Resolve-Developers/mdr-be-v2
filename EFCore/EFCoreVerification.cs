@@ -1,7 +1,9 @@
-﻿using danj_backend.Data;
+﻿using System.Dynamic;
+using danj_backend.Data;
 using danj_backend.DB;
 using danj_backend.Helper;
 using danj_backend.Helper.CodeGenerator;
+using danj_backend.Model;
 using danj_backend.Repository;
 using MailKit.Net.Smtp;
 using MailKit.Security;
@@ -28,19 +30,41 @@ where TContext : ApiDbContext
         var sentCount = await context.Set<TEntity>().Where(x => x.email == entity.email && x.isValid == 1)
             .FirstOrDefaultAsync();
         var verificationProfile = await context.Set<TEntity>().AnyAsync(x => x.email == entity.email && x.isValid == 1);
+        var checkIfHasResentCode = await context.Set<TEntity>()
+            .AnyAsync(x => x.email == entity.email && x.isValid == 1);
         if (entity.type == "email")
         {
-            if (verificationProfile)
+            if (checkIfHasResentCode)
             {
-                if (sentCount.resendCount >= 3)
+                await SMSResendVerificationCode("email", entity.email);
+                return 200;
+            }
+            else
+            {
+                if (verificationProfile)
                 {
-                    return "max_sent_use_latest";
+                    if (sentCount.resendCount >= 3)
+                    {
+                        return "max_sent_use_latest";
+                    }
+                    else
+                    {
+                        entity.code = GenerateVerificationCode.GenerateCode();
+                        entity.isValid = 1;
+                        entity.resendCount = sentCount.resendCount + 1;
+                        entity.createdAt = DateTime.Today;
+                        entity.updatedAt = DateTime.Today;
+                        SendEmailSMTPWithCode(entity.email, entity.code, "Kindly use this code to verify your account");
+                        await context.Set<TEntity>().AddAsync(entity);
+                        await context.SaveChangesAsync();
+                        return 200;
+                    }
                 }
                 else
                 {
                     entity.code = GenerateVerificationCode.GenerateCode();
                     entity.isValid = 1;
-                    entity.resendCount = sentCount.resendCount + 1;
+                    entity.resendCount = 1;
                     entity.createdAt = DateTime.Today;
                     entity.updatedAt = DateTime.Today;
                     SendEmailSMTPWithCode(entity.email, entity.code, "Kindly use this code to verify your account");
@@ -48,18 +72,6 @@ where TContext : ApiDbContext
                     await context.SaveChangesAsync();
                     return 200;
                 }
-            }
-            else
-            {
-                entity.code = GenerateVerificationCode.GenerateCode();
-                entity.isValid = 1;
-                entity.resendCount = 1;
-                entity.createdAt = DateTime.Today;
-                entity.updatedAt = DateTime.Today;
-                SendEmailSMTPWithCode(entity.email, entity.code, "Kindly use this code to verify your account");
-                await context.Set<TEntity>().AddAsync(entity);
-                await context.SaveChangesAsync();
-                return 200;
             }
         }
         else
@@ -100,7 +112,60 @@ where TContext : ApiDbContext
 
     public async Task<dynamic> SMSResendVerificationCode(string type, string email)
     {
-        throw new NotImplementedException();
+        var sentCount = await context.Set<TEntity>()
+            .Where(x => x.email == email && x.isValid == 1).FirstOrDefaultAsync();
+        var matchSentCountWithCooldown = await context.Set<VerificationCooldown>()
+            .AnyAsync(x => x.resendCount == sentCount.resendCount);
+        
+        dynamic dynobj = new ExpandoObject();
+        if (type == "email")
+        {
+            if (matchSentCountWithCooldown)
+            {
+                var findCooldown = await context.Set<VerificationCooldown>()
+                    .Where(x => x.resendCount == sentCount.resendCount).FirstOrDefaultAsync();
+                var code = GenerateVerificationCode.GenerateCode();
+                sentCount.code = code;
+                sentCount.resendCount = sentCount.resendCount + 1;
+                sentCount.createdAt = DateTime.Today;
+                SendEmailSMTPWithCode(
+                    email,
+                    code,
+                    "Kindly use this code to verify your account"
+                );
+                await context.SaveChangesAsync();
+                dynobj.cooldown = findCooldown.cooldown;
+                dynobj.status = 401;
+                return dynobj;
+            }
+            else
+            {
+                if (sentCount.resendCount >= 5)
+                {
+                    var code = GenerateVerificationCode.GenerateCode();
+                    
+                    return 400;
+                }
+                else
+                {
+                    var code = GenerateVerificationCode.GenerateCode();
+                    sentCount.code = code;
+                    sentCount.resendCount = sentCount.resendCount + 1;
+                    sentCount.createdAt = DateTime.Today;
+                    SendEmailSMTPWithCode(
+                        email,
+                        code,
+                        "Kindly use this code to verify your account"
+                    );
+                    await context.SaveChangesAsync();
+                    return 200;
+                }
+            }
+        }
+        else
+        {
+            return "sms-provider";
+        }
     }
 
     public async Task SendEmailSMTPWithCode(string email, string code, string? body)
@@ -128,5 +193,62 @@ where TContext : ApiDbContext
     public async Task SendWelcomeEmailSMTPWithoutCode(string email, string? body)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<dynamic> PostNewVerificationCooldowns(VerificationCooldown verificationCooldown)
+    {
+        var checkverificationEdition = await context.Set<VerificationCooldown>()
+            .AnyAsync(x => x.resendCount == verificationCooldown.resendCount);
+        VerificationCooldown vc = new VerificationCooldown();
+        if (checkverificationEdition)
+        {
+            return 501;
+        }
+        else
+        {
+            vc.resendCount = verificationCooldown.resendCount;
+            vc.cooldown = verificationCooldown.cooldown;
+            await context.Set<VerificationCooldown>().AddAsync(vc);
+            await context.SaveChangesAsync();
+            return 200;
+        }
+    }
+
+    public async Task<dynamic> CheckVerificationCountsWhenLoad(string email)
+    {
+        var selectedResentCounts = await context.Set<TEntity>()
+            .Where(x => x.email == email && x.isValid == 1).FirstOrDefaultAsync();
+        if (selectedResentCounts != null)
+        {
+            return selectedResentCounts.resendCount;
+        }
+        else
+        {
+            return 400;
+        }
+    }
+
+    public async Task<dynamic> CheckVerificationAfter24Hours(string email)
+    {
+        var entity = await context.Set<TEntity>()
+            .Where(x => x.email == email && x.isValid == 1).FirstOrDefaultAsync();
+        if (entity != null)
+        {
+            TimeSpan timeDifference = DateTime.Now - entity.createdAt;
+            if (timeDifference.TotalHours >= 24)
+            {
+                entity.isValid = 0;
+                await context.SaveChangesAsync();
+                return 200;
+            }
+            else
+            {
+                return 400;
+            }
+        }
+        else
+        {
+            return 400;
+        }
     }
 }

@@ -49,5 +49,6 @@ namespace danj_backend.DB
         public DbSet<DynamicRouting> dynamicRoutings { get; set; }
         public DbSet<Verification> Verifications { get; set; }
         public DbSet<AccountPreregistered> AccountPreregistereds { get; set; }
+        public DbSet<VerificationCooldown> VerificationCooldowns { get; set; }
     }
 }
