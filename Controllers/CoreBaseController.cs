@@ -188,82 +188,8 @@ namespace danj_backend.Controllers
         [Route("login"), HttpPost]
         public async Task<IActionResult> accountLogin([FromBody] LoginHelper loginHelper)
         {
-            try
-            {
-                string email = loginHelper.email;
-                string password = loginHelper.password;
-
-                bool findUserByEmailBool = repository.FindAny(x => x.email == email);
-                var findUserByEmailDefault = repository.FindEmailExist(x => x.email == email);
-                dynamic dynObject = new ExpandoObject();
-                if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
-                {
-                    return Ok("EMPTY");
-                }
-                else
-                {
-                    string EncryptedPassword = findUserByEmailDefault == null ? "" : findUserByEmailDefault.password;
-                    if (findUserByEmailBool)
-                    {
-                        if (findUserByEmailDefault.isstatus == Convert.ToChar("0"))
-                        {
-                            if (findUserByEmailDefault.userType == 1)
-                            {
-                                if (BCrypt.Net.BCrypt.Verify(password, EncryptedPassword))
-                                {
-                                    var findCorrespondingRouter = repository.FindCorrespondingRoute(
-                                        x => x.access_level == findUserByEmailDefault.userType
-                                    );
-                                    var getResult = repository.FetchAllUsersInformation(x => x.email == email);
-                                    dynObject.message = "SUCCESS_LOGIN";
-                                    dynObject.bundle = getResult;
-                                    dynObject.routeInfo = findCorrespondingRouter.requestId;
-                                    return Ok(dynObject);
-                                }
-                                else
-                                {
-                                    return Ok("INVALID_PASSWORD");
-                                }
-                            }
-                            else if (findUserByEmailDefault.userType == 2)
-                            {
-                                return Ok("DEVELOPER_ACCOUNT");
-                            }
-                            else
-                            {
-                                if (BCrypt.Net.BCrypt.Verify(password, EncryptedPassword))
-                                {
-                                    var findCorrespondingRouter = repository.FindCorrespondingRoute(
-                                        x => x.access_level == findUserByEmailDefault.userType
-                                    );
-                                    var getResult = repository.FetchAllUsersInformation(x => x.email == email);
-                                    dynObject.message = "SUCCESS_LOGIN";
-                                    dynObject.bundle = getResult;
-                                    dynObject.routeInfo = findCorrespondingRouter.requestId;
-                                    return Ok(dynObject);
-                                }
-                                else
-                                {
-                                    return Ok("INVALID_PASSWORD");
-                                }
-                            }
-                        }
-                        else
-                        {
-                            return Ok("ACCOUNT_LOCK");
-                        }
-                    }
-                    else
-                    {
-                        return Ok("NOT_FOUND");
-                    }
-                }
-            }
-            catch (System.Exception)
-            {
-
-                throw;
-            }
+            var result = await repository.login(loginHelper);
+            return Ok(result);
         }
     }
 }
