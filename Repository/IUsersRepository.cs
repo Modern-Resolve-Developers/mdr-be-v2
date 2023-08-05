@@ -42,5 +42,6 @@ namespace danj_backend.Repository
         public Task<dynamic> CustomerCheckEmail(string email);
 
         public Boolean CheckUsersData();
+        public Task<dynamic> login(LoginHelper loginHelper);
     }
 }

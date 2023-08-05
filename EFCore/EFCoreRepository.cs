@@ -220,6 +220,93 @@ namespace danj_backend.EFCore
             return !context.Set<TEntity>().Any();
         }
 
+        public async Task<dynamic> login(LoginHelper loginHelper)
+        {
+            try
+            {
+                string email = loginHelper.email;
+                string password = loginHelper.password;
+                bool lookusers = await context.Set<TEntity>()
+                    .AnyAsync(x => x.email == email);
+                dynamic dynObject = new ExpandoObject();
+                if (string.IsNullOrWhiteSpace(email)
+                    || string.IsNullOrWhiteSpace(password))
+                {
+                    return "EMPTY";
+                }
+                else
+                {
+                    if (lookusers)
+                    {
+                        var foundUser = await context.Set<TEntity>()
+                            .Where(x => x.email == email).FirstOrDefaultAsync();
+                        string encrypted = foundUser == null ? "" : foundUser.password;
+                        if (foundUser.userType == 1)
+                        {
+                            if (foundUser.isstatus == Convert.ToChar("0"))
+                            {
+                                if (BCrypt.Net.BCrypt.Verify(password, encrypted))
+                                {
+                                    var lookSafeRouter = await context.Set<DynamicRouting>()
+                                        .Where(x => x.access_level == foundUser.userType).FirstOrDefaultAsync();
+                                    var getresult = await FetchAllUsersInformation(x => x.email == email);
+                                    dynObject.message = "SUCCESS_LOGIN";
+                                    dynObject.bundle = getresult;
+                                    dynObject.routeInfo = lookSafeRouter.requestId;
+                                    return dynObject;
+                                }
+                                else
+                                {
+                                    return "INVALID_PASSWORD";
+                                }
+                            }
+                            else
+                            {
+                                return "ACCOUNT_LOCK";
+                            }
+                        } 
+                        else if (foundUser.userType == 2)
+                        {
+                            return "DEVELOPER_ACCOUNT";
+                        }
+                        else
+                        {
+                            if (foundUser.isstatus == Convert.ToChar("0"))
+                            {
+                                if (BCrypt.Net.BCrypt.Verify(password, encrypted))
+                                {
+                                    var lookSafeRouter = await context.Set<DynamicRouting>()
+                                        .Where(x => x.access_level == foundUser.userType).FirstOrDefaultAsync();
+                                    var getresult = await FetchAllUsersInformation(x => x.email == email);
+                                    dynObject.message = "SUCCESS_LOGIN";
+                                    dynObject.bundle = getresult;
+                                    dynObject.routeInfo = lookSafeRouter.requestId;
+                                    return dynObject;
+                                }
+                                else
+                                {
+                                    return "INVALID_PASSWORD";
+                                }
+                            }
+                            else
+                            {
+                                return "ACCOUNT_LOCK";
+                            }
+                        }
+                    }
+                    else
+                    {
+                        return "NOT_FOUND";
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
         public TEntity UAM(TEntity entity)
         {
             if (entity.userType == 1)
