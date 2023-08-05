@@ -249,7 +249,17 @@ namespace danj_backend.EFCore
                                 {
                                     var lookSafeRouter = await context.Set<DynamicRouting>()
                                         .Where(x => x.access_level == foundUser.userType).FirstOrDefaultAsync();
-                                    var getresult = await FetchAllUsersInformation(x => x.email == email);
+                                    var getresult = await context.Set<TEntity>().Where(x => x.email == email)
+                                        .Select(t => new
+                                        {
+                                            t.Id,
+                                            t.firstname,
+                                            t.lastname,
+                                            t.email,
+                                            t.imgurl,
+                                            t.userType,
+                                            t.middlename
+                                        }).ToListAsync();
                                     dynObject.message = "SUCCESS_LOGIN";
                                     dynObject.bundle = getresult;
                                     dynObject.routeInfo = lookSafeRouter.requestId;
@@ -277,7 +287,17 @@ namespace danj_backend.EFCore
                                 {
                                     var lookSafeRouter = await context.Set<DynamicRouting>()
                                         .Where(x => x.access_level == foundUser.userType).FirstOrDefaultAsync();
-                                    var getresult = await FetchAllUsersInformation(x => x.email == email);
+                                    var getresult = await context.Set<TEntity>().Where(x => x.email == email)
+                                        .Select(t => new
+                                        {
+                                            t.Id,
+                                            t.firstname,
+                                            t.lastname,
+                                            t.email,
+                                            t.imgurl,
+                                            t.userType,
+                                            t.middlename
+                                        }).ToListAsync();
                                     dynObject.message = "SUCCESS_LOGIN";
                                     dynObject.bundle = getresult;
                                     dynObject.routeInfo = lookSafeRouter.requestId;
