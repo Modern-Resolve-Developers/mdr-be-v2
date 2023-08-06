@@ -42,7 +42,7 @@ namespace danj_backend.Controllers
                 return Ok(dynObject);
             }
         }
-
+        //if this API is [Authorize] then on the frontend side we should call the refresh token before processing the signout.
         [Route("destroy-signout/{id}"), HttpPut]
         public ActionResult DestroyToken(int id)
         {

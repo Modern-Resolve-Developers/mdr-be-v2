@@ -46,6 +46,12 @@ namespace danj_backend.Controllers
             return Ok(dynObject);
         }
 
+        [Route("find-secured-route/{uuid}"), HttpGet]
+        public async Task<IActionResult> SecuredRouterFound([FromRoute] int uuid)
+        {
+            var result = await repository.findSecuredRoute(uuid);
+            return Ok(result);
+        }
         [Route("fetch-saved-auth-history"), HttpPost]
         public ActionResult fetchAndValidatedSavedAuth(SavedAuthHelper savedAuthHelper)
         {

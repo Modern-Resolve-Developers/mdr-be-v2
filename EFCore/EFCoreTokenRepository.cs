@@ -62,25 +62,15 @@ namespace danj_backend.EFCore
         {
             var result = context.Set<TEntity>().Any(x => x.userId == userid && x.isValid == Convert.ToChar("1"));
             var getUserType = context.Users.Where(x => x.Id == userid).FirstOrDefault();
-            if(result)
+            if (result)
             {
-                if(getUserType != null)
+                if (getUserType != null)
                 {
-                    if(getUserType.userType == Convert.ToChar('1'))
-                    {
-                        var role = "Administrator";
-                        return role;
-                    }
-                    else if(getUserType.userType == Convert.ToChar('2'))
-                    {
-                        var role = "Developers";
-                        return role;
-                    }
-                    else
-                    {
-                        var role = "Client";
-                        return role;
-                    }
+                    return getUserType.userType;
+                }
+                else
+                {
+                    return "No_Token";
                 }
             }
             else
