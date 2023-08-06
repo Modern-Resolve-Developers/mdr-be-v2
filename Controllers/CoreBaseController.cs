@@ -6,11 +6,12 @@ using danj_backend.Repository;
 using danj_backend.Helper;
 using danj_backend.DB;
 using System.Dynamic;
+using danj_backend.Helper.Router;
 using Microsoft.AspNetCore.Authorization;
 
 namespace danj_backend.Controllers
 {
-    
+
     [Route("api/[controller]")]
     [ApiController]
     public abstract class CoreBaseController<TEntity, TRepository> : ControllerBase
@@ -45,13 +46,14 @@ namespace danj_backend.Controllers
             }
         }
 
-        
+        [Authorize]
         [Route("find-all-users-report"), HttpGet]
         public ActionResult FindAllUsers()
         {
             var result = repository.GetAllUsers();
             return Ok(result);
         }
+        [Authorize]
         [Route("uam-add"), HttpPost]
         public IActionResult addUAM(TEntity entity)
         {
@@ -67,11 +69,11 @@ namespace danj_backend.Controllers
             return Ok(result);
         }
 
-        
+        [Authorize]
         [Route("uam-check-email/{email}"), HttpGet]
         public ActionResult UAMCheckEmail([FromRoute] string email)
         {
-            var checkEmailAny = repository.FindAny(x => x.email== email);
+            var checkEmailAny = repository.FindAny(x => x.email == email);
             if (checkEmailAny)
             {
                 return Ok("email_exist");
@@ -115,7 +117,7 @@ namespace danj_backend.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public ActionResult UpdatePersonalDetails([FromBody] PersonalDetails personalDetails)
         {
-            if(repository.UpdateUsersPersonalDetails(personalDetails))
+            if (repository.UpdateUsersPersonalDetails(personalDetails))
             {
                 return Ok(200);
             }
@@ -127,7 +129,7 @@ namespace danj_backend.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public ActionResult UpdateUsersVerifiedStatus([FromRoute] string propstype, int id)
         {
-            if(repository.UpdateUsersVerifiedAndStatus(propstype, id))
+            if (repository.UpdateUsersVerifiedAndStatus(propstype, id))
             {
                 return Ok(200);
             }
@@ -142,59 +144,52 @@ namespace danj_backend.Controllers
             return Ok(200);
         }
 
-        [Route("login"), HttpPost]
-        public ActionResult accountLogin([FromBody] LoginHelper loginHelper)
+        [Authorize]
+        [Route("get-router"), HttpPost]
+        public async Task<ActionResult> GetRouter([FromBody] RouteWithRequestId pRequestId)
         {
-            try
-            {
-                string email = loginHelper.email;
-                string password = loginHelper.password;
+            var result = await repository.FindRouter(pRequestId);
+            return Ok(result);
+        }   
 
-                bool findUserByEmailBool = repository.FindAny(x => x.email == email);
-                var findUserByEmailDefault = repository.FindEmailExist(x => x.email == email);
+        [Route("google-check-verify/{email}"), HttpGet]
+        public async Task<IActionResult> GoogleCheckAccount([FromRoute] string email)
+        {
+            var result = await repository.GoogleAccountEmailVerifier(email);
+            return Ok(result);
+        }
 
-                if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
-                {
-                    return Ok("EMPTY");
-                }
-                else
-                {
-                    string EncryptedPassword = findUserByEmailDefault == null ? "" : findUserByEmailDefault.password;
-                    if (findUserByEmailBool)
-                    {
-                        if(findUserByEmailDefault.isstatus == Convert.ToChar('0'))
-                        {
-                            if (BCrypt.Net.BCrypt.Verify(password, EncryptedPassword))
-                            {
-                                dynamic dynObject = new ExpandoObject();
+        [Route("account-setup-checker"), HttpGet]
+        public ActionResult CheckAccountSetup()
+        {
+            return Ok(repository.CheckUsersData());
+        }
 
-                                var getResult = repository.FetchAllUsersInformation(x => x.email == email);
+        [Route("customer-account-creation/{key}"), HttpPost]
+        public async Task<IActionResult> CustomerAccountCreation([FromBody] TEntity entity, [FromRoute] string key)
+        {
+            var result = await repository.CustomerAccountCreation(entity, key);
+            return Ok(result);
+        }
 
-                                dynObject.message = "SUCCESS_LOGIN";
-                                dynObject.bundle = getResult;
-                                return Ok(dynObject);
-                            }
-                            else
-                            {
-                                return Ok("INVALID_PASSWORD");
-                            }
-                        } 
-                        else
-                        {
-                            return Ok("ACCOUNT_LOCK");
-                        }
-                    }
-                    else
-                    {
-                        return Ok("NOT_FOUND");
-                    }
-                }
-            }
-            catch (System.Exception)
-            {
+        [Route("customer-check-email/{email}"), HttpGet]
+        public async Task<IActionResult> CheckEmailOnCustomerRegistration([FromRoute] string email)
+        {
+            var result = await repository.CustomerCheckEmail(email);
+            return Ok(result);
+        }
 
-                throw;
-            }
+        [Route("dynamic-route"), HttpPost]
+        public async Task<IActionResult> PostNewDynamicRoutes([FromBody] PostNewRoutesParams postNewRoutesParams)
+        {
+            var result = await repository.PostNewDynamicRouteWhenLoginProcessed(postNewRoutesParams.JsonRoutes);
+            return Ok(result);
+        }
+        [Route("login"), HttpPost]
+        public async Task<IActionResult> accountLogin([FromBody] LoginHelper loginHelper)
+        {
+            var result = await repository.login(loginHelper);
+            return Ok(result);
         }
     }
 }

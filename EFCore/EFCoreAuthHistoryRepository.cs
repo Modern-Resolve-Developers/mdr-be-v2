@@ -3,6 +3,7 @@ using danj_backend.DB;
 using danj_backend.Repository;
 using System.Linq.Expressions;
 using danj_backend.Authentication;
+using Microsoft.EntityFrameworkCore;
 
 namespace danj_backend.EFCore
 {
@@ -28,6 +29,21 @@ namespace danj_backend.EFCore
         public bool FindInAuthHistoryIfExist(Expression<Func<TEntity, bool>> predicate)
         {
            return context.Set<TEntity>().Any(predicate);
+        }
+
+        public async Task<dynamic> findSecuredRoute(int uuid)
+        {
+            var identifiedAccessLevel = await context.Users.Where(x => x.Id == uuid).FirstOrDefaultAsync();
+            var foundSecuredRoute = await context.dynamicRoutings.Where(
+                x => x.access_level == identifiedAccessLevel.userType).FirstOrDefaultAsync();
+            if (foundSecuredRoute != null)
+            {
+                return foundSecuredRoute.exactPath;
+            }
+            else
+            {
+                return 404;
+            }
         }
 
 

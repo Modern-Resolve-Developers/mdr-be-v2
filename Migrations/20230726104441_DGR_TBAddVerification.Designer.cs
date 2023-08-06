@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using danj_backend.DB;
 
@@ -11,9 +12,11 @@ using danj_backend.DB;
 namespace danj_backend.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230726104441_DGR_TBAddVerification")]
+    partial class DGR_TBAddVerification
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -226,7 +229,7 @@ namespace danj_backend.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("danj_backend.Model.VerificationCooldown", b =>
+            modelBuilder.Entity("danj_backend.Model.Verification", b =>
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
@@ -234,15 +237,32 @@ namespace danj_backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
-                    b.Property<long>("cooldown")
-                        .HasColumnType("bigint");
+                    b.Property<string>("code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("createdAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("isValid")
+                        .HasColumnType("int");
 
                     b.Property<int>("resendCount")
                         .HasColumnType("int");
 
+                    b.Property<string>("type")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("updatedAt")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("id");
 
-                    b.ToTable("verification_cooldown");
+                    b.ToTable("verification");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

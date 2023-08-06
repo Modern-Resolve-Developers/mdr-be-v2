@@ -9,6 +9,7 @@ using danj_backend.EFCore.EFProducts;
 using danj_backend.EFCore.EFSettings;
 using danj_backend.EFCore.EFSystemGen;
 using danj_backend.EFCore.EFUsers;
+using danj_backend.EFCore.EFVerification;
 using danj_backend.Helper;
 using danj_backend.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -66,7 +67,6 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
         ClockSkew = TimeSpan.Zero,
-
         ValidAudience = configuration["JWT:ValidAudience"],
         ValidIssuer = configuration["JWT:ValidIssuer"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:IssuerSigningKey"]))
@@ -148,6 +148,7 @@ builder.Services.AddScoped<EFCoreFuncProductManagement>();
 builder.Services.AddScoped<EFCoreFuncSystemGen>();
 builder.Services.AddScoped<EFCoreFuncJitser>();
 builder.Services.AddScoped<EFCoreFuncFP>();
+builder.Services.AddScoped<EFCoreFuncVerification>();
 builder.Services.AddScoped<ApiKeyAuthFilter>();
 builder.Services.AddTransient<IMailService, MailService>();
 

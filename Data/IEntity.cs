@@ -14,6 +14,6 @@ namespace danj_backend.Data
         char verified { get; set; }
         DateTime created_at { get; set; }
         DateTime updated_at { get; set; }
-        char userType { get; set; }
+        int userType { get; set; }
     }
 }

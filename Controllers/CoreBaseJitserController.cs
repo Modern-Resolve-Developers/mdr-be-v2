@@ -33,27 +33,30 @@ where TRepository : IJitserRepository<TEntity>
         }
     }
     
+    [Authorize]
     [Route("get-all-rooms"), HttpGet]
     public async Task<IActionResult> getAllRooms()
     {
         var result = await _repository.getAllRooms();
         return Ok(result);
     }
-
+    
+    [Authorize]
     [Route("join-meet/{name}/{roomId}"), HttpPost]
     public async Task<IActionResult> joinRoom(string name, int roomId)
     {
         var result = await _repository.WhenJoinMeet(roomId, name);
         return Ok(result);
     }
-
+    
+    [Authorize]
     [Route("hang-out-meeting/{name}"), HttpDelete]
     public async Task<IActionResult> HangOutCall(string name)
     {
         var result = await _repository.HangoutMeet(name);
         return Ok(result);
     }
-
+    [Authorize]
     [Route("delete-room/{id}"), HttpDelete]
     public async Task<IActionResult> deleteRoom(int id)
     {

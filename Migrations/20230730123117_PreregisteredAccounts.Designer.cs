@@ -12,8 +12,8 @@ using danj_backend.DB;
 namespace danj_backend.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20230724022218_Users_AddPhoneNumberColumn")]
-    partial class Users_AddPhoneNumberColumn
+    [Migration("20230730123117_PreregisteredAccounts")]
+    partial class PreregisteredAccounts
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -229,7 +229,7 @@ namespace danj_backend.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("danj_backend.Model.Settings", b =>
+            modelBuilder.Entity("danj_backend.Model.AccountPreregistered", b =>
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
@@ -237,80 +237,17 @@ namespace danj_backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
-                    b.Property<DateTime>("createdAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("dynamicDashboardEnabled")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(1)");
-
-                    b.Property<string>("settingsType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("updatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("id");
-
-                    b.ToTable("settings");
-                });
-
-            modelBuilder.Entity("danj_backend.Model.Users", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("created_at")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("firstname")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("imgurl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("isstatus")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(1)");
-
-                    b.Property<string>("lastname")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("middlename")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("phoneNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasKey("id");
 
-                    b.Property<DateTime>("updated_at")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("userType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(1)");
-
-                    b.Property<string>("verified")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(1)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("users");
+                    b.ToTable("account_pre_registered");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

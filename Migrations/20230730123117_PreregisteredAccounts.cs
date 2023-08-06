@@ -6,33 +6,34 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace danj_backend.Migrations
 {
     /// <inheritdoc />
-    public partial class settings_dashboard_migration : Migration
+    public partial class PreregisteredAccounts : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+
             migrationBuilder.CreateTable(
-                name: "settings",
+                name: "account_pre_registered",
                 columns: table => new
                 {
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    dynamicDashboardEnabled = table.Column<char>(type: "char(1)", nullable: false),
-                    settingsType = table.Column<string>(type: "nvarchar(100)", nullable: false),
-                    createdAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    updatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    password = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_settings", x => x.id);
-                }
-            );
+                    table.PrimaryKey("PK_account_pre_registered", x => x.id);
+                });
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(name: "settings");
+            migrationBuilder.DropTable(
+                name: "account_pre_registered");
+
+           
         }
     }
 }

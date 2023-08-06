@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using danj_backend.Data;
 using danj_backend.Helper;
+using danj_backend.Helper.Router;
 using danj_backend.Model;
 
 namespace danj_backend.Repository
@@ -13,6 +14,8 @@ namespace danj_backend.Repository
         public Boolean FindAny(Expression<Func<T, bool>> predicate);
 
         public dynamic FetchAllUsersInformation(Expression<Func<T, bool>> predicate);
+
+        public dynamic FindCorrespondingRoute(Expression<Func<DynamicRouting, bool>> predicate);
 
         public Boolean FindUsersExists(int id);
 
@@ -27,5 +30,18 @@ namespace danj_backend.Repository
         public Task<Boolean> DeleteUAM(int id);
 
         public Task<Boolean> DeleteUsers(int id);
+
+        public Task<dynamic> PostNewDynamicRouteWhenLoginProcessed(string dynamicRouting);
+
+        public Task<dynamic> FindRouter(RouteWithRequestId pRequestId);
+
+        public Task<dynamic> GoogleAccountEmailVerifier(string email);
+
+        public Task<dynamic> CustomerAccountCreation(T entity, string key);
+
+        public Task<dynamic> CustomerCheckEmail(string email);
+
+        public Boolean CheckUsersData();
+        public Task<dynamic> login(LoginHelper loginHelper);
     }
 }
