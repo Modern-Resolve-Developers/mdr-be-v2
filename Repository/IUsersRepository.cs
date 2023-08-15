@@ -43,5 +43,14 @@ namespace danj_backend.Repository
 
         public Boolean CheckUsersData();
         public Task<dynamic> login(LoginHelper loginHelper);
+        public Task<dynamic> deviceSecurityLayers(DeviceInformation deviceInformation);
+        public Task<dynamic> deviceRequest(string email);
+        public Task<int> deviceRevokeRequest(string email);
+        public Task<int> unauthDeviceRevokeRequest(string email);
+        public Task<System.Nullable<int>> getDeviceRequest(Guid deviceId);
+        public Task<dynamic> demolishDeviceRequest(string email);
+        public Task<int> securedApprovedDevice(Guid? deviceId, string email);
+        public Task<Boolean> checkApprovedDevice(string email);
+        public Task<dynamic> approvedDeviceReset(string email);
     }
 }

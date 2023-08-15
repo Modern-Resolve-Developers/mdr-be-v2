@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using danj_backend.DB;
 
@@ -11,9 +12,11 @@ using danj_backend.DB;
 namespace danj_backend.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230813121822_dgr_users_add_col_isloggedin")]
+    partial class dgr_users_add_col_isloggedin
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -226,46 +229,63 @@ namespace danj_backend.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("danj_backend.Model.DeviceInformation", b =>
+            modelBuilder.Entity("danj_backend.Model.Users", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("createdAt")
+                    b.Property<int>("accountIsLoggedIn")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("created_at")
                         .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("deviceId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("deviceInfoStringify")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("deviceStatus")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("deviceType")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("isActive")
+                    b.Property<string>("firstname")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("imgurl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("isstatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(1)");
+
+                    b.Property<string>("lastname")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("middlename")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("phoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("updated_at")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("userType")
                         .HasColumnType("int");
 
-                    b.Property<int>("isApproved")
-                        .HasColumnType("int");
+                    b.Property<string>("verified")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(1)");
 
-                    b.Property<int?>("request")
-                        .HasColumnType("int");
+                    b.HasKey("Id");
 
-                    b.HasKey("id");
-
-                    b.ToTable("device_information");
+                    b.ToTable("users");
                 });
 
             modelBuilder.Entity("danj_backend.Model.VerificationCooldown", b =>

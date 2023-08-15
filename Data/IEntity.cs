@@ -12,6 +12,7 @@ namespace danj_backend.Data
         string imgurl { get; set; }
         char isstatus { get; set; }
         char verified { get; set; }
+        int accountIsLoggedIn { get; set; }
         DateTime created_at { get; set; }
         DateTime updated_at { get; set; }
         int userType { get; set; }

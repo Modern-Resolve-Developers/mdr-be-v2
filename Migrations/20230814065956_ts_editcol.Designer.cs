@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using danj_backend.DB;
 
@@ -11,9 +12,11 @@ using danj_backend.DB;
 namespace danj_backend.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230814065956_ts_editcol")]
+    partial class ts_editcol
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -226,7 +229,7 @@ namespace danj_backend.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("danj_backend.Model.DeviceInformation", b =>
+            modelBuilder.Entity("danj_backend.Model.TokenStorage", b =>
                 {
                     b.Property<int>("id")
                         .ValueGeneratedOnAdd()
@@ -234,21 +237,16 @@ namespace danj_backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
-                    b.Property<DateTime>("createdAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("deviceId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("deviceInfoStringify")
+                    b.Property<string>("AccessToken")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("deviceStatus")
+                    b.Property<string>("RefreshToken")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("deviceType")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("createdAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("email")
                         .IsRequired()
@@ -257,15 +255,9 @@ namespace danj_backend.Migrations
                     b.Property<int>("isActive")
                         .HasColumnType("int");
 
-                    b.Property<int>("isApproved")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("request")
-                        .HasColumnType("int");
-
                     b.HasKey("id");
 
-                    b.ToTable("device_information");
+                    b.ToTable("token_storage");
                 });
 
             modelBuilder.Entity("danj_backend.Model.VerificationCooldown", b =>

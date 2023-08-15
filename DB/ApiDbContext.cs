@@ -28,7 +28,9 @@ namespace danj_backend.DB
             builder.Ignore<Settings>();
             builder.Ignore<DynamicRouting>();
             builder.Ignore<Verification>();
-            builder.Ignore<AccountPreregistered>();*/
+            builder.Ignore<AccountPreregistered>();
+            builder.Ignore<DeviceInformation>();
+            builder.Ignore<TokenStorage>();*/
         }
         public DbSet<Users> Users { get; set; }
         public DbSet<Tokenization> Tokenization { get; set; }
@@ -50,5 +52,7 @@ namespace danj_backend.DB
         public DbSet<Verification> Verifications { get; set; }
         public DbSet<AccountPreregistered> AccountPreregistereds { get; set; }
         public DbSet<VerificationCooldown> VerificationCooldowns { get; set; }
+        public DbSet<DeviceInformation> DeviceInformations { get; set; }
+        public DbSet<TokenStorage> TokenStorages { get; set; }
     }
 }
