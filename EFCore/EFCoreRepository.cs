@@ -247,6 +247,14 @@ namespace danj_backend.EFCore
                             {
                                 if (BCrypt.Net.BCrypt.Verify(password, encrypted))
                                 {
+                                    var findDeviceInformation = await context.Set<DeviceInformation>()
+                                        .Where(x => x.email == email && x.isActive == 1)
+                                        .FirstOrDefaultAsync();
+                                    if (findDeviceInformation != null)
+                                    {
+                                        findDeviceInformation.deviceStatus = "logged_in";
+                                    }
+                                    foundUser.accountIsLoggedIn = 1;
                                     var lookSafeRouter = await context.Set<DynamicRouting>()
                                         .Where(x => x.access_level == foundUser.userType).FirstOrDefaultAsync();
                                     var getresult = await context.Set<TEntity>().Where(x => x.email == email)
@@ -263,6 +271,7 @@ namespace danj_backend.EFCore
                                     dynObject.message = "SUCCESS_LOGIN";
                                     dynObject.bundle = getresult;
                                     dynObject.routeInfo = lookSafeRouter.requestId;
+                                    await context.SaveChangesAsync();
                                     return dynObject;
                                 }
                                 else
@@ -285,6 +294,7 @@ namespace danj_backend.EFCore
                             {
                                 if (BCrypt.Net.BCrypt.Verify(password, encrypted))
                                 {
+                                    foundUser.accountIsLoggedIn = 1;
                                     var lookSafeRouter = await context.Set<DynamicRouting>()
                                         .Where(x => x.access_level == foundUser.userType).FirstOrDefaultAsync();
                                     var getresult = await context.Set<TEntity>().Where(x => x.email == email)
@@ -301,6 +311,7 @@ namespace danj_backend.EFCore
                                     dynObject.message = "SUCCESS_LOGIN";
                                     dynObject.bundle = getresult;
                                     dynObject.routeInfo = lookSafeRouter.requestId;
+                                    await context.SaveChangesAsync();
                                     return dynObject;
                                 }
                                 else
@@ -327,6 +338,231 @@ namespace danj_backend.EFCore
             }
         }
 
+
+        public async Task<dynamic> deviceSecurityLayers(DeviceInformation deviceInformation)
+        {
+            dynamic dynObject = new ExpandoObject();
+            var deviceHasAnyValue = await context.Set<DeviceInformation>().AnyAsync();
+            if (deviceHasAnyValue)
+            {
+                if (deviceInformation.deviceId != null)
+                {
+                    var getResult = await context.Set<DeviceInformation>()
+                        .Where(x => x.email == deviceInformation.email 
+                                    && x.isActive == 1)
+                        .FirstOrDefaultAsync();
+                    if (getResult != null)
+                    {
+                        if (deviceInformation.deviceId == getResult.deviceId)
+                        {
+                            dynObject.message = "recognized_succeed";
+                            dynObject.deviceId = getResult.deviceId;
+                            return dynObject;
+                        }
+                        else
+                        {
+                            return 201;
+                        }
+                    }
+                    else
+                    {
+                        DeviceInformation _deviceInformation = new DeviceInformation();
+                        Guid mockDeviceId = Guid.NewGuid();
+                        _deviceInformation.deviceId = mockDeviceId;
+                        _deviceInformation.deviceInfoStringify = deviceInformation.deviceInfoStringify;
+                        _deviceInformation.isActive = 1;
+                        _deviceInformation.createdAt = DateTime.Today;
+                        _deviceInformation.deviceType = "primary";
+                        _deviceInformation.email = deviceInformation.email;
+                        _deviceInformation.deviceStatus = "logged_in";
+                        _deviceInformation.request = 0;
+                        await context.Set<DeviceInformation>().AddAsync(_deviceInformation);
+                        await context.SaveChangesAsync();
+                        dynObject.message = "recognized_succeed";
+                        dynObject.deviceId = mockDeviceId;
+                        return dynObject;
+                    }
+                }
+                else
+                {
+                    var isDeviceStatus = await context.Set<DeviceInformation>()
+                        .AnyAsync(x => x.email == deviceInformation.email
+                                       && x.deviceType == "primary" && x.isActive == 1);
+                    if (isDeviceStatus)
+                    {
+                        var ctx = await context.Set<DeviceInformation>()
+                            .Where(x => x.email == deviceInformation.email
+                                        && x.isActive == 1 || x.deviceStatus == "logged_in").FirstOrDefaultAsync();
+                        if (ctx != null)
+                        {
+                            // confirmation from primary device logged in
+                            return 202;
+                        }
+                        else
+                        {
+                            // send vcode 
+                            return 201;
+                        }
+                    }
+                    else
+                    {
+                        DeviceInformation _deviceInformation = new DeviceInformation();
+                        Guid mockDeviceId = Guid.NewGuid();
+                        _deviceInformation.deviceId = mockDeviceId;
+                        _deviceInformation.deviceInfoStringify = deviceInformation.deviceInfoStringify;
+                        _deviceInformation.isActive = 1;
+                        _deviceInformation.createdAt = DateTime.Today;
+                        _deviceInformation.deviceType = "primary";
+                        _deviceInformation.email = deviceInformation.email;
+                        _deviceInformation.deviceStatus = "logged_in";
+                        _deviceInformation.request = 0;
+                        await context.Set<DeviceInformation>().AddAsync(_deviceInformation);
+                        await context.SaveChangesAsync();
+                        dynObject.message = "recognized_succeed";
+                        dynObject.deviceId = mockDeviceId;
+                        return dynObject;
+                    }
+                }
+            }
+            else
+            {
+                DeviceInformation _deviceInformation = new DeviceInformation();
+                Guid mockDeviceId = Guid.NewGuid();
+                _deviceInformation.deviceId = mockDeviceId;
+                _deviceInformation.deviceInfoStringify = deviceInformation.deviceInfoStringify;
+                _deviceInformation.isActive = 1;
+                _deviceInformation.createdAt = DateTime.Today;
+                _deviceInformation.deviceType = "primary";
+                _deviceInformation.email = deviceInformation.email;
+                _deviceInformation.deviceStatus = "logged_in";
+                _deviceInformation.request = 0;
+                await context.Set<DeviceInformation>().AddAsync(_deviceInformation);
+                await context.SaveChangesAsync();
+                dynObject.message = "recognized_succeed";
+                dynObject.deviceId = mockDeviceId;
+                return dynObject;
+            }
+        }
+
+        public async Task<dynamic> deviceRequest(string email)
+        {
+            var entity = await context.Set<DeviceInformation>()
+                .Where(x => x.email == email && x.isActive == 1
+                && x.deviceType == "primary").FirstOrDefaultAsync();
+            if (entity != null)
+            {
+                if (entity.request >= 2)
+                {
+                    return 500;
+                }
+                else
+                {
+                    entity.request = entity.request + 1;
+                    await context.SaveChangesAsync();
+                    return 200;
+                }
+            }
+            else
+            {
+                return 400;
+            }
+        }
+
+        public async Task<int> deviceRevokeRequest(string email)
+        {
+            var entity = await context.Set<DeviceInformation>()
+                .Where(x => x.email == email && x.isActive == 1
+                                             && x.deviceType == "primary").FirstOrDefaultAsync();
+            entity.request = 0;
+            entity.isActive = 0;
+            entity.deviceStatus = "logged_out";
+            await context.SaveChangesAsync();
+            return 200;
+        }
+
+        public async Task<int> unauthDeviceRevokeRequest(string email)
+        {
+            var entity = await context.Set<DeviceInformation>()
+                .Where(x => x.email == email && x.isActive == 1
+                                             && x.deviceType == "primary").FirstOrDefaultAsync();
+            entity.request = 0;
+            await context.SaveChangesAsync();
+            return 200;
+        }
+
+        public async Task<System.Nullable<int>> getDeviceRequest(Guid deviceId)
+        {
+            var foundRequest = await context.Set<DeviceInformation>()
+                .Where(x => x.deviceId == deviceId)
+                .FirstOrDefaultAsync();
+            if (foundRequest != null)
+            {
+                return foundRequest.request;
+            }
+            else
+            {
+                return 400;
+            }
+        }
+
+        public async Task<dynamic> demolishDeviceRequest(string email)
+        {
+            var entity = await context.Set<DeviceInformation>()
+                .Where(x => x.email == email && x.isActive == 1
+                                             && x.deviceType == "primary").FirstOrDefaultAsync();
+            if (entity != null)
+            {
+                entity.request = 0;
+                await context.SaveChangesAsync();
+                return 200;
+            }
+            else
+            {
+                return 400;
+            }
+        }
+
+        public async Task<int> securedApprovedDevice(Guid? deviceId, string email)
+        {
+            var foundDeviceToBeApproved = await context.Set<DeviceInformation>()
+                .Where(x => x.deviceId == deviceId || x.email == email && x.isActive == 1)
+                .FirstOrDefaultAsync();
+            if (foundDeviceToBeApproved != null)
+            {
+                foundDeviceToBeApproved.isApproved = 1;
+                foundDeviceToBeApproved.request = 0;
+                foundDeviceToBeApproved.isActive = 0;
+                foundDeviceToBeApproved.deviceStatus = "logged_out";
+                await context.SaveChangesAsync();
+                return 200;
+            }
+            else
+            {
+                return 400;
+            }
+        }
+
+        public async Task<bool> checkApprovedDevice(string email)
+        {
+            bool isApprovedTrigger = await context.Set<DeviceInformation>()
+                .AnyAsync(x => x.email == email && x.isApproved == 1);
+            return isApprovedTrigger;
+        }
+
+        public async Task<dynamic> approvedDeviceReset(string email)
+        {
+            var foundApprovedDeviceToBeReset = await context.Set<DeviceInformation>()
+                .Where(x => x.email == email && x.isApproved == 1)
+                .FirstOrDefaultAsync();
+            if (foundApprovedDeviceToBeReset != null)
+            {
+                foundApprovedDeviceToBeReset.isApproved = 0;
+                await context.SaveChangesAsync();
+                return 200;
+            }
+
+            return 400;
+        }
         public TEntity UAM(TEntity entity)
         {
             if (entity.userType == 1)

@@ -2,12 +2,14 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using danj_backend.DB;
 using danj_backend.Helper;
 using danj_backend.JwtHelpers;
 using danj_backend.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace danj_backend.Controllers.Authentication
@@ -19,25 +21,27 @@ namespace danj_backend.Controllers.Authentication
         private readonly UserManager<ApplicationAuthentication> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
-
+        private readonly ApiDbContext _db;
         public AuthenticationController(
             UserManager<ApplicationAuthentication> userManager,
             RoleManager<IdentityRole> roleManager,
-            IConfiguration configuration)
+            IConfiguration configuration, ApiDbContext db)
+            
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
+            _db = db;
         }
 
         [Route("auth-secure-login/{jwtusername}/{jwtpassword}"), HttpPost]
         public async Task<IActionResult> AuthenticateLogin([FromRoute] string jwtusername, string jwtpassword)
         {
+            
             var user = await _userManager.FindByNameAsync(jwtusername);
             if (user != null && await _userManager.CheckPasswordAsync(user, jwtpassword))
             {
                 var userRoles = await _userManager.GetRolesAsync(user);
-
                 var authClaims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, user.UserName),
@@ -58,7 +62,6 @@ namespace danj_backend.Controllers.Authentication
                 user.RefreshTokenExpiryTime = DateTime.Now.AddDays(refreshTokenValidityInDays);
 
                 await _userManager.UpdateAsync(user);
-
                 return Ok(new
                 {
                     Token = new JwtSecurityTokenHandler().WriteToken(token),
@@ -67,6 +70,28 @@ namespace danj_backend.Controllers.Authentication
                 });
             }
             return Unauthorized();
+        }
+
+        [Route("auth-token-storage"), HttpPost]
+        public async Task<IActionResult> TokenStore([FromBody] TokenStorage tokenStorage)
+        {
+            TokenStorage _tokenStorage = new TokenStorage();
+            var tokenFound = await _db.TokenStorages.AnyAsync(x => x.email == tokenStorage.email && x.isActive == 1);
+            if (tokenFound)
+            {
+                return Ok(301);
+            }
+            else
+            {
+                _tokenStorage.AccessToken = tokenStorage.AccessToken;
+                _tokenStorage.RefreshToken = tokenStorage.RefreshToken;
+                _tokenStorage.email = tokenStorage.email;
+                _tokenStorage.isActive = 1;
+                _tokenStorage.createdAt = DateTime.Today;
+                await _db.TokenStorages.AddAsync(_tokenStorage);
+                await _db.SaveChangesAsync();
+                return Ok(200);
+            }
         }
 
         [Route("auth-secure-register"), HttpPost]
@@ -132,13 +157,18 @@ namespace danj_backend.Controllers.Authentication
         [Route("revoke/{username}")]
         public async Task<IActionResult> Revoke(string username)
         {
-            var user = await _userManager.FindByNameAsync(username);
-            if (user == null) return BadRequest("Invalid user name");
+            var token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            if (!string.IsNullOrEmpty(token))
+            {
+                var user = await _userManager.FindByNameAsync(username);
+                if (user == null) return BadRequest("Invalid user name");
 
-            user.RefreshToken = null;
-            await _userManager.UpdateAsync(user);
+                user.RefreshToken = null;
+                await _userManager.UpdateAsync(user);
+                return NoContent();
+            }
 
-            return NoContent();
+            return Unauthorized();
         }
         [Authorize]
         [HttpPost]
