@@ -238,11 +238,11 @@ namespace danj_backend.Controllers
         }
 
         [Route("approved-device/{email}/trigger"), HttpGet]
-        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType( 200)]
         [AllowAnonymous]
         public async Task<IActionResult> ApprovedDeviceTrigger([FromRoute] string email)
         {
-            bool result = (await repository.checkApprovedDevice(email));
+            var result = (await repository.checkApprovedDevice(email));
             return Ok(result);
         }
 
@@ -277,6 +277,35 @@ namespace danj_backend.Controllers
             if (!string.IsNullOrEmpty(currentToken))
             {
                 var result = (await repository.securedApprovedDevice(deviceId, email));
+                if (result != 200)
+                {
+                    return BadRequest();
+                }
+                else
+                {
+                    return Ok(result);
+                }
+            }
+
+            return Unauthorized();
+        }
+
+        [Authorize]
+        [Route("device-decline/{deviceId}/auth/{email}"), HttpPut]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> deviceDecline([FromRoute] Guid? deviceId, string email)
+        {
+            var currentToken = HttpContext
+                .Request
+                .Headers["Authorization"]
+                .FirstOrDefault()
+                ?.Split(" ")
+                .Last();
+            if (!string.IsNullOrEmpty(currentToken))
+            {
+                var result = (await repository.securedDeclineDevice(deviceId, email));
                 if (result != 200)
                 {
                     return BadRequest();
