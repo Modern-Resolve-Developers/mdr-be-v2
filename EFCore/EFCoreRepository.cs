@@ -542,17 +542,42 @@ namespace danj_backend.EFCore
             }
         }
 
-        public async Task<bool> checkApprovedDevice(string email)
+        public async Task<int> securedDeclineDevice(Guid? deviceId, string email)
         {
-            bool isApprovedTrigger = await context.Set<DeviceInformation>()
-                .AnyAsync(x => x.email == email && x.isApproved == 1);
-            return isApprovedTrigger;
+            var foundDeviceToBeDeclined = await context.Set<DeviceInformation>()
+                .Where(x => x.deviceId == deviceId || x.email == email
+                    && x.isActive == 1)
+                .FirstOrDefaultAsync();
+            if (foundDeviceToBeDeclined != null)
+            {
+                foundDeviceToBeDeclined.isApproved = 2;
+                foundDeviceToBeDeclined.request = 0;
+                await context.SaveChangesAsync();
+                return 200;
+            }
+            else
+            {
+                return 400;
+            }
+        }
+
+        public async Task<int> checkApprovedDevice(string email)
+        {
+            var isApprovedTrigger = await context.Set<DeviceInformation>()
+                .Where(x => x.email == email && x.isApproved == 1 || x.isApproved == 2)
+                .FirstOrDefaultAsync();
+            if (isApprovedTrigger != null)
+            {
+                return isApprovedTrigger.isApproved;
+            }
+
+            return isApprovedTrigger.isApproved;
         }
 
         public async Task<dynamic> approvedDeviceReset(string email)
         {
             var foundApprovedDeviceToBeReset = await context.Set<DeviceInformation>()
-                .Where(x => x.email == email && x.isApproved == 1)
+                .Where(x => x.email == email && x.isApproved == 1 || x.isApproved == 2)
                 .FirstOrDefaultAsync();
             if (foundApprovedDeviceToBeReset != null)
             {
